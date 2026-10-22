@@ -45,6 +45,7 @@
         ],
         "format": "pint",
         "format:check": "pint --test",
+        "test:sql": "@php tests/Integration/accounts.php",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

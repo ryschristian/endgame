@@ -1,6 +1,6 @@
 # P01 — Accounts and authentication
 
-**Status:** Proposed for user review; product implementation has not started.
+**Status:** Approved for implementation by the user on 2026-10-22; implemented behavior and verification are recorded in [P01-implementation.md](../../P01-implementation.md).
 
 **Source:** `docs/SDD.md`, P01, together with `AGENTS.md`, `BACKEND.md`, and `FRONTEND.md`.
 
@@ -92,7 +92,8 @@ Use the existing `users`, `sessions`, and `password_reset_tokens` tables. Add on
 
 | Record | Purpose |
 |---|---|
-| User account flags | Active/suspended state and explicit System Admin authority |
+| User account flags | Active/suspended state, explicit System Admin authority, and session authentication version |
+| `account_administration` | One stable control row to serialize bootstrap/account changes and retain bootstrap history |
 | `account_invitations` | Normalized email, hashed token, inviting administrator, expiry, acceptance/revocation state, timestamps |
 | `audit_events` | Actor, action, affected user/invitation identifiers, restricted before/after metadata, timestamp |
 
@@ -130,11 +131,11 @@ Use Vitest for meaningful form behavior and permission visibility. Playwright co
 
 Run the repository's PHP tests/format checks, Vue tests/type checks/format checks, production build, and relevant Chromium journeys. Report unavailable MySQL or mail checks explicitly. Completion requires the P01 flows and their access rules to work, not just successful page rendering.
 
-## 12. Items awaiting this review
+## 12. Implementation record
 
-The bootstrap method is confirmed. The remaining proposed defaults to approve are: native Laravel authentication, 48-hour invitations, database-backed sessions, read-only account email, explicit audited System Admin grants/revocations, and the password/rate-limit rules above.
+The user approved implementation of this specification. The delivered defaults are native Laravel authentication, 48-hour invitations, database-backed sessions, read-only account email, explicit audited System Admin grants/revocations, and the password/rate-limit rules above.
 
-After written-spec approval, prepare the implementation plan and obtain its review before product implementation, as required by the brainstorming workflow. No product code, dependency installation, database migration, or external notification delivery is part of this design-only change.
+The implementation uses a stable database control row for transactional serialization and an authentication version to reject stale sessions that an in-flight response might recreate. See [P01-implementation.md](../../P01-implementation.md) and [HANDOFF.md](../../HANDOFF.md) for code, verification, and environment setup details.
 
 ## Framework references
 
