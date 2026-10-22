@@ -80,9 +80,9 @@ test('suspension signs an existing member session out and blocks sign-in', async
         await signIn(memberPage, 'member@example.test', fixtures().password);
         await signIn(page, 'admin@example.test', fixtures().password);
         await page.getByRole('link', { name: 'Accounts', exact: true }).click();
-        const row = page
-            .getByRole('row')
-            .filter({ hasText: 'member@example.test' });
+        const row = page.getByRole('row').filter({
+            has: page.getByText('member@example.test', { exact: true }),
+        });
         await row.getByRole('button', { name: 'Suspend', exact: true }).click();
         const dialog = page.getByRole('dialog');
         await expect(dialog).toBeVisible();

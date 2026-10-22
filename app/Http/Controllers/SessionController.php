@@ -33,6 +33,7 @@ class SessionController extends Controller
             }
             $request->session()->regenerate();
             $request->session()->put('auth_version', $request->user()->auth_version);
+
             return true;
         }, 3);
         if (! $authenticated) {
@@ -45,6 +46,14 @@ class SessionController extends Controller
         if ($intended === route('account.edit') || ($request->user()->can('manage-accounts') && $intended === route('accounts.index'))) {
             return redirect($intended);
         }
+        if (is_string($intended) && preg_match('~/project-invitations/([a-f0-9]{64})$~D', $intended, $matches)) {
+            $invitationUrl = route('project-invitations.show', ['token' => $matches[1]]);
+            // Exact URL equality also rejects other origins, query strings, and fragments.
+            if (hash_equals($invitationUrl, $intended)) {
+                return redirect($invitationUrl);
+            }
+        }
+
         return to_route('account.edit');
     }
 
@@ -53,6 +62,7 @@ class SessionController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return to_route('login');
     }
 }

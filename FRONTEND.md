@@ -73,6 +73,9 @@ resources/js/
 - Use semantic HTML and sensible focus behavior for dialogs, menus, and tables.
 - Prefer one obvious primary action per view; avoid icon-only controls without accessible names.
 - Use Tailwind utilities consistently; avoid custom CSS for patterns already covered by primitives.
+IMPORTANT NOTE:
+Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.
+Please use the latest shadcn design
 
 ## 8. Tables, search, and performance
 - For potentially large ticket lists, use server pagination/filtering/sorting.

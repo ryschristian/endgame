@@ -6,6 +6,7 @@ use App\Models\AuditEvent;
 use App\Models\User;
 use App\Support\AccountRules;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -26,6 +27,7 @@ class AccountService
         if (! $freshActor->is_active || ! $freshActor->is_system_admin || $freshActor->auth_version !== $actor->auth_version) {
             throw new AuthorizationException;
         }
+
         return $freshActor;
     }
 
@@ -47,6 +49,7 @@ class AccountService
             $user->forceFill(['is_active' => true, 'is_system_admin' => true, 'email_verified_at' => now()])->save();
             DB::table('account_administration')->where('id', 1)->update(['bootstrapped_at' => now()]);
             AuditEvent::create(['action' => 'account.bootstrapped', 'target_user_id' => $user->id]);
+
             return $user->refresh();
         }, 3);
     }
@@ -84,8 +87,12 @@ class AccountService
                 $this->revokeSessions($target);
             }
             $target->save();
+            if ($field === 'is_active' && ! $value) {
+                app(ProjectService::class)->ensureSuspensionAllowed($target);
+            }
             $action = $field === 'is_active' ? ($value ? 'account.activated' : 'account.suspended') : ($value ? 'account.admin_granted' : 'account.admin_revoked');
             AuditEvent::create(['actor_id' => $actor->id, 'target_user_id' => $target->id, 'action' => $action, 'metadata' => ['before' => [$field => $before], 'after' => [$field => $value]]]);
+
             return $target;
         }, 3);
     }
@@ -107,6 +114,7 @@ class AccountService
                 $user->update(['name' => $name]);
                 AuditEvent::create(['actor_id' => $user->id, 'target_user_id' => $user->id, 'action' => 'account.profile_updated', 'metadata' => ['before' => ['name' => $before], 'after' => ['name' => $name]]]);
             }
+
             return $user;
         }, 3);
     }
@@ -121,6 +129,7 @@ class AccountService
             $user->password = $password;
             $user->save();
             AuditEvent::create(['actor_id' => $user->id, 'target_user_id' => $user->id, 'action' => 'account.password_changed']);
+
             return $user;
         }, 3);
     }
@@ -129,8 +138,9 @@ class AccountService
     {
         $user = User::whereKey($actor->id)->lockForUpdate()->firstOrFail();
         if (! $user->is_active || $user->auth_version !== $actor->auth_version) {
-            throw new \Illuminate\Auth\AuthenticationException;
+            throw new AuthenticationException;
         }
+
         return $user;
     }
 

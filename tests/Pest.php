@@ -1,6 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
+
+require_once __DIR__.'/Support/projects.php';
 
 uses(TestCase::class)->in('Feature');
 
@@ -12,9 +15,9 @@ uses()->beforeEach(function () {
         throw new RuntimeException('Account tests require an isolated in-memory database or an endgame_p01_test_ database.');
     }
     $this->artisan('migrate', ['--force' => true])->assertSuccessful();
-    Illuminate\Support\Facades\DB::beginTransaction();
+    DB::beginTransaction();
 })->afterEach(function () {
-    while (Illuminate\Support\Facades\DB::transactionLevel() > 0) {
-        Illuminate\Support\Facades\DB::rollBack();
+    while (DB::transactionLevel() > 0) {
+        DB::rollBack();
     }
-})->in('Feature/Accounts');
+})->in('Feature/Accounts', 'Feature/Projects');
