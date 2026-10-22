@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import type { SharedPageProps } from '@/types/accounts';
+import { Link } from '@inertiajs/vue3';
 
-defineProps<{ appName: string }>();
+defineProps<{ appName: string; auth?: SharedPageProps['auth'] }>();
 </script>
 
 <template>
@@ -18,5 +20,10 @@ defineProps<{ appName: string }>();
         <Button as-child class="self-start">
             <a href="/up">Check application health</a>
         </Button>
+        <Link
+            :href="auth?.user ? '/account' : '/login'"
+            class="self-start py-3 text-sm underline underline-offset-4"
+            >{{ auth?.user ? 'My account' : 'Sign in' }}</Link
+        >
     </main>
 </template>
