@@ -9,27 +9,27 @@ const page = usePage<SharedPageProps>();
 <template>
     <Head :title="title" />
     <main
-        class="flex min-h-screen flex-col items-center justify-center bg-muted/40 px-4 py-12"
+        class="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12"
     >
-        <Link href="/" class="mb-8 text-xl font-semibold tracking-tight">{{
+        <Link href="/" class="mb-6 text-lg font-semibold tracking-tight">{{
             page.props.appName
         }}</Link>
         <section
-            class="w-full max-w-md rounded-xl border bg-card p-6 shadow-sm sm:p-8"
+            class="w-full max-w-[420px] rounded-xl border bg-card p-5 shadow-sm sm:p-6"
             :aria-label="title"
         >
-            <header class="mb-7 space-y-2">
-                <h1 class="text-2xl font-semibold tracking-tight">
+            <header class="mb-5 space-y-1.5">
+                <h1 class="text-[23px] font-semibold tracking-tight">
                     {{ title }}
                 </h1>
-                <p class="text-sm leading-6 text-muted-foreground">
+                <p class="text-[12.5px] leading-relaxed text-muted-foreground">
                     {{ description }}
                 </p>
             </header>
             <p
                 v-if="page.props.flash.status"
                 role="status"
-                class="mb-6 rounded-md border bg-muted p-3 text-sm leading-6"
+                class="mb-6 rounded-md border bg-muted p-3 text-[12.5px] leading-relaxed"
             >
                 {{ page.props.flash.status }}
             </p>

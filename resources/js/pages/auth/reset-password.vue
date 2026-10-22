@@ -25,7 +25,7 @@ function submit() {
         title="Choose a new password"
         description="Set a new password to regain access to your account."
     >
-        <form class="space-y-5" @submit.prevent="submit">
+        <form class="space-y-4" @submit.prevent="submit">
             <FormField
                 id="email"
                 v-model="form.email"
@@ -57,13 +57,13 @@ function submit() {
             <p
                 v-if="form.errors.token"
                 role="alert"
-                class="text-sm text-destructive"
+                class="text-[12.5px] text-destructive"
             >
                 {{ form.errors.token }}
             </p>
             <Button
                 type="submit"
-                class="min-h-11 w-full"
+                class="min-h-9 w-full sm:min-h-7.5"
                 :disabled="form.processing"
                 >{{ form.processing ? 'Resetting…' : 'Reset password' }}</Button
             >

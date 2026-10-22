@@ -30,8 +30,8 @@ function submit() {
                 : 'This invitation is invalid, expired, or already used. Ask your administrator for a new invitation.'
         "
     >
-        <form v-if="valid" class="space-y-5" @submit.prevent="submit">
-            <div class="rounded-md bg-muted px-3 py-3 text-sm">
+        <form v-if="valid" class="space-y-4" @submit.prevent="submit">
+            <div class="rounded-md bg-muted px-3 py-3 text-[12.5px]">
                 <span class="block text-muted-foreground">Invited email</span
                 ><span class="font-medium break-all">{{ email }}</span>
             </div>
@@ -65,20 +65,23 @@ function submit() {
             <p
                 v-if="form.errors.token"
                 role="alert"
-                class="text-sm text-destructive"
+                class="text-[12.5px] text-destructive"
             >
                 {{ form.errors.token }}
             </p>
             <Button
                 type="submit"
-                class="min-h-11 w-full"
+                class="min-h-9 w-full sm:min-h-7.5"
                 :disabled="form.processing"
                 >{{
                     form.processing ? 'Creating account…' : 'Create account'
                 }}</Button
             >
         </form>
-        <Link v-else href="/login" class="text-sm underline underline-offset-4"
+        <Link
+            v-else
+            href="/login"
+            class="text-[12.5px] underline underline-offset-4"
             >Back to sign in</Link
         >
     </AuthLayout>

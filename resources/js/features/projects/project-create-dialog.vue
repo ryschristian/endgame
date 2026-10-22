@@ -24,9 +24,9 @@ defineEmits<{ close: [] }>();
         ><DialogPortal
             ><DialogOverlay
                 class="fixed inset-0 z-40 bg-[#211d18]/30" /><DialogContent
-                class="fixed top-1/2 left-1/2 z-50 max-h-[90dvh] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-white/80 bg-background shadow-xl outline-none"
-                ><div class="relative space-y-1 border-b px-5 py-4">
-                    <DialogTitle class="text-sm font-semibold"
+                class="fixed bottom-0 left-0 z-50 max-h-[92dvh] w-full overflow-y-auto rounded-t-[14px] border bg-card shadow-xl outline-none sm:top-[10vh] sm:bottom-auto sm:left-1/2 sm:max-h-[80dvh] sm:max-w-[560px] sm:-translate-x-1/2 sm:rounded-xl"
+                ><div class="relative space-y-1 border-b px-4 py-3.5">
+                    <DialogTitle class="text-[12.5px] font-semibold"
                         >New project</DialogTitle
                     ><DialogDescription
                         class="pr-5 text-xs text-muted-foreground"
@@ -43,7 +43,7 @@ defineEmits<{ close: [] }>();
                             /></button
                     ></DialogClose>
                 </div>
-                <div class="p-5">
+                <div class="p-4">
                     <ProjectForm
                         :team-timezone="timezone"
                     /></div></DialogContent></DialogPortal

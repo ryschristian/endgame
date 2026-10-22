@@ -80,7 +80,7 @@ onBeforeUnmount(() => {
         >
         <aside
             v-if="!collapsed"
-            class="fixed inset-y-0 left-0 z-30 hidden w-56 border-r border-sidebar-border lg:block"
+            class="fixed inset-y-0 left-0 z-30 hidden w-[var(--workspace-sidebar-width)] border-r border-sidebar-border lg:block"
         >
             <WorkspaceSidebar
                 :user="user"
@@ -111,10 +111,10 @@ onBeforeUnmount(() => {
         ></DialogRoot>
         <div
             class="min-w-0 transition-[padding] duration-200 motion-reduce:transition-none"
-            :class="!collapsed ? 'lg:pl-56' : ''"
+            :class="!collapsed ? 'lg:pl-[var(--workspace-sidebar-width)]' : ''"
         >
             <header
-                class="flex h-13 items-center justify-between gap-3 border-b bg-background px-4 sm:px-6"
+                class="flex h-[var(--workspace-topbar-height)] items-center justify-between gap-3 border-b bg-card px-4 sm:px-6"
             >
                 <div class="flex min-w-0 items-center gap-3">
                     <button
@@ -164,7 +164,7 @@ onBeforeUnmount(() => {
                             maxlength="255"
                             class="h-7.5 w-48 rounded-md border border-border bg-muted/50 pr-12 pl-8 text-xs outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20 xl:w-56"
                         /><kbd
-                            class="pointer-events-none absolute right-2 rounded border bg-white px-1 font-sans text-[9px] text-muted-foreground"
+                            class="pointer-events-none absolute right-2 rounded border bg-card px-1 font-sans text-[9px] text-muted-foreground"
                             >Ctrl K</kbd
                         >
                     </form>
@@ -191,7 +191,7 @@ onBeforeUnmount(() => {
             </header>
             <main
                 id="main-content"
-                class="space-y-6 px-4 py-6 sm:px-6 [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:tracking-[-0.035em]"
+                class="space-y-5 px-4 py-5 sm:px-6 sm:py-7 [&_h1]:text-[23px] [&_h1]:leading-tight [&_h1]:font-semibold [&_h1]:tracking-[-0.022em]"
             >
                 <p
                     v-if="status"

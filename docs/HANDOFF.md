@@ -43,6 +43,8 @@ See [workspace interface design](superpowers/specs/2026-10-22-workspace-interfac
 
 ## Operator setup still required
 
+The subsequent design-system foundation pass aligns root light tokens, the 252px sidebar, 46px top bar, compact shared controls, and existing account/project forms with [design-system.md](design-system.md). The New project dialog becomes a bottom sheet on small screens. Geist Sans and the fixed Manila timezone are preserved. Verification: 11 frontend tests and 9 Chromium journeys passed, with desktop/dialog/mobile screenshots inspected. No backend changes were made in this pass.
+
 1. Point `.env` at the intended existing **MySQL** server/database. The currently configured local server is MariaDB, and its `endgame` application database did not exist during implementation.
 2. Set `SESSION_DRIVER=database` and configure a real SMTP mailer (`MAIL_MAILER=smtp`). The foundation's old file-session/log-mail environment values were not silently rewritten.
 3. Verify the database target, then run `php artisan migrate` using PHP 8.5. Do not use reset/truncate/fresh commands.

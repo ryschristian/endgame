@@ -26,8 +26,8 @@ function submit() {
 }
 </script>
 <template>
-    <form class="space-y-5" @submit.prevent="submit">
-        <h2 class="text-lg font-semibold">Add or invite a member</h2>
+    <form class="space-y-4" @submit.prevent="submit">
+        <h2 class="text-[14.5px] font-semibold">Add or invite a member</h2>
         <fieldset
             :disabled="disabled || form.processing"
             class="space-y-4 disabled:opacity-60"
@@ -41,7 +41,7 @@ function submit() {
                 required
             />
             <RolePicker v-model="form.role_ids" :options="roleOptions" />
-            <fieldset class="flex flex-wrap gap-5 text-sm">
+            <fieldset class="flex flex-wrap gap-5 text-[12.5px]">
                 <legend class="sr-only">Membership method</legend>
                 <label class="flex items-center gap-2"
                     ><input v-model="mode" type="radio" value="add" />Add
@@ -52,7 +52,7 @@ function submit() {
                     invitation</label
                 >
             </fieldset>
-            <p class="text-sm text-muted-foreground">
+            <p class="text-[12.5px] text-muted-foreground">
                 Members need an active Endgame account. A System Admin can
                 invite new accounts.
             </p>
@@ -61,7 +61,7 @@ function submit() {
             v-for="(message, key) in form.errors"
             :key="key"
             role="alert"
-            class="text-sm text-destructive"
+            class="text-[12.5px] text-destructive"
         >
             {{ message }}
         </p>

@@ -30,13 +30,10 @@ function submit() {
 </script>
 
 <template>
-    <form
-        class="space-y-5 [&_input]:h-9 [&_input]:text-sm"
-        @submit.prevent="submit"
-    >
+    <form class="space-y-4" @submit.prevent="submit">
         <fieldset
             :disabled="Boolean(project?.archived_at) || form.processing"
-            class="space-y-5 disabled:opacity-60"
+            class="space-y-4 disabled:opacity-60"
         >
             <FormField
                 v-if="!project"
@@ -54,10 +51,10 @@ function submit() {
                 :error="form.errors.name"
                 required
             />
-            <div class="space-y-2">
+            <div class="space-y-1.5">
                 <label
                     for="project-description"
-                    class="block text-sm font-medium"
+                    class="block text-[12.5px] font-medium"
                     >Description</label
                 >
                 <textarea
@@ -65,13 +62,19 @@ function submit() {
                     v-model="form.description"
                     rows="3"
                     maxlength="10000"
-                    class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    class="min-h-18 w-full resize-y rounded-md border border-input bg-card px-2.5 py-2 text-base leading-relaxed outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/10 sm:text-[13.5px]"
                     :aria-invalid="Boolean(form.errors.description)"
+                    :aria-describedby="
+                        form.errors.description
+                            ? 'project-description-error'
+                            : undefined
+                    "
                 />
                 <p
                     v-if="form.errors.description"
+                    id="project-description-error"
                     role="alert"
-                    class="text-sm text-destructive"
+                    class="text-xs text-destructive"
                 >
                     {{ form.errors.description }}
                 </p>
@@ -99,13 +102,13 @@ function submit() {
         <p
             v-if="form.errors.revision"
             role="alert"
-            class="text-sm text-destructive"
+            class="text-xs text-destructive"
         >
             {{ form.errors.revision }}
         </p>
         <Button
             type="submit"
-            class="h-8.5 min-h-0 rounded-md px-3 text-xs"
+            class="ml-auto flex"
             :disabled="form.processing || Boolean(project?.archived_at)"
             >{{
                 form.processing

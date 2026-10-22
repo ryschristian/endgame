@@ -67,10 +67,10 @@ function actOnInvitation(
             class="rounded-xl border bg-card p-5 sm:p-6"
             aria-labelledby="invite-title"
         >
-            <h2 id="invite-title" class="text-lg font-semibold">
+            <h2 id="invite-title" class="text-[14.5px] font-semibold">
                 Invite someone
             </h2>
-            <p class="mt-1 text-sm text-muted-foreground">
+            <p class="mt-1 text-[12.5px] text-muted-foreground">
                 They’ll receive a link to create their account.
             </p>
             <form
@@ -95,7 +95,7 @@ function actOnInvitation(
                 </div>
                 <Button
                     type="submit"
-                    class="min-h-11"
+                    class="min-h-9 sm:min-h-7.5"
                     :disabled="invite.processing"
                     >{{
                         invite.processing ? 'Sending…' : 'Send invitation'
@@ -105,7 +105,7 @@ function actOnInvitation(
             <p
                 v-if="invite.errors.delivery"
                 role="alert"
-                class="mt-3 text-sm text-destructive"
+                class="mt-3 text-[12.5px] text-destructive"
             >
                 {{ invite.errors.delivery }}
             </p>
@@ -116,9 +116,10 @@ function actOnInvitation(
             aria-labelledby="accounts-title"
         >
             <div class="space-y-4 border-b p-5 sm:p-6">
-                <h2 id="accounts-title" class="text-lg font-semibold">
+                <h2 id="accounts-title" class="text-[14.5px] font-semibold">
                     Team accounts
-                    <span class="text-sm font-normal text-muted-foreground"
+                    <span
+                        class="text-[12.5px] font-normal text-muted-foreground"
                         >({{ users.total }})</span
                     >
                 </h2>
@@ -129,24 +130,24 @@ function actOnInvitation(
                     <div class="min-w-0 flex-1 space-y-2">
                         <label
                             for="account-search"
-                            class="block text-sm font-medium"
+                            class="block text-[12.5px] font-medium"
                             >Search name or email</label
                         ><input
                             id="account-search"
                             v-model="filters.q"
                             type="search"
-                            class="h-11 w-full rounded-md border border-input bg-background px-3"
+                            class="h-9 w-full rounded-md border border-input bg-card px-2.5 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/10 sm:h-7.5 sm:text-[13.5px]"
                         />
                     </div>
                     <div class="space-y-2">
                         <label
                             for="account-status"
-                            class="block text-sm font-medium"
+                            class="block text-[12.5px] font-medium"
                             >Status</label
                         ><select
                             id="account-status"
                             v-model="filters.status"
-                            class="h-11 rounded-md border border-input bg-background px-3"
+                            class="h-9 rounded-md border border-input bg-card px-2.5 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/10 sm:h-7.5 sm:text-[13.5px]"
                         >
                             <option
                                 v-for="option in statusOptions"
@@ -157,13 +158,16 @@ function actOnInvitation(
                             </option>
                         </select>
                     </div>
-                    <Button type="submit" variant="outline" class="min-h-11"
+                    <Button
+                        type="submit"
+                        variant="outline"
+                        class="min-h-9 sm:min-h-7.5"
                         >Apply filters</Button
                     >
                 </form>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
+                <table class="w-full text-left text-[12.5px]">
                     <caption class="sr-only">
                         Application accounts and available access changes
                     </caption>
@@ -197,7 +201,7 @@ function actOnInvitation(
                                 <div class="flex flex-wrap gap-2">
                                     <Button
                                         variant="outline"
-                                        class="min-h-11"
+                                        class="min-h-9 sm:min-h-7.5"
                                         :disabled="!user.canChangeStatus"
                                         :title="
                                             !user.canChangeStatus
@@ -213,7 +217,7 @@ function actOnInvitation(
                                         }}</Button
                                     ><Button
                                         variant="outline"
-                                        class="min-h-11"
+                                        class="min-h-9 sm:min-h-7.5"
                                         :disabled="!user.canChangeAdministrator"
                                         :title="
                                             !user.canChangeAdministrator
@@ -262,10 +266,10 @@ function actOnInvitation(
             aria-labelledby="invitations-title"
         >
             <div class="border-b p-5 sm:p-6">
-                <h2 id="invitations-title" class="text-lg font-semibold">
+                <h2 id="invitations-title" class="text-[14.5px] font-semibold">
                     Invitations
                 </h2>
-                <p class="mt-1 text-sm text-muted-foreground">
+                <p class="mt-1 text-[12.5px] text-muted-foreground">
                     Resending replaces the previous link. Revoking prevents
                     acceptance.
                 </p>
@@ -275,7 +279,7 @@ function actOnInvitation(
                         invitationAction.errors.delivery
                     "
                     role="alert"
-                    class="mt-3 text-sm text-destructive"
+                    class="mt-3 text-[12.5px] text-destructive"
                 >
                     {{
                         invitationAction.errors.invitation ||
@@ -293,7 +297,7 @@ function actOnInvitation(
                         <p class="font-medium break-all">
                             {{ invitation.email }}
                         </p>
-                        <p class="mt-1 text-sm text-muted-foreground">
+                        <p class="mt-1 text-[12.5px] text-muted-foreground">
                             {{ invitation.statusLabel }} · Expires
                             {{
                                 new Date(invitation.expires_at).toLocaleString()
@@ -303,14 +307,14 @@ function actOnInvitation(
                     <div class="flex gap-2">
                         <Button
                             variant="outline"
-                            class="min-h-11"
+                            class="min-h-9 sm:min-h-7.5"
                             :disabled="invitationAction.processing"
                             :aria-label="`Resend invitation to ${invitation.email}`"
                             @click="actOnInvitation(invitation, 'resend')"
                             >Resend</Button
                         ><Button
                             variant="outline"
-                            class="min-h-11"
+                            class="min-h-9 sm:min-h-7.5"
                             :disabled="
                                 !invitation.canRevoke ||
                                 invitationAction.processing
@@ -323,7 +327,7 @@ function actOnInvitation(
                 </li>
                 <li
                     v-if="!invitations.data.length"
-                    class="px-5 py-10 text-center text-sm text-muted-foreground"
+                    class="px-5 py-10 text-center text-[12.5px] text-muted-foreground"
                 >
                     No pending invitations. Invite someone above to get started.
                 </li>

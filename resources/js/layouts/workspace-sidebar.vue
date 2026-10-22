@@ -31,7 +31,9 @@ const isArchive = computed(
     <div
         class="flex h-full min-h-0 flex-col bg-sidebar text-sidebar-foreground"
     >
-        <div class="flex h-13 shrink-0 items-center gap-2 px-3">
+        <div
+            class="flex h-[var(--workspace-topbar-height)] shrink-0 items-center gap-2 px-3"
+        >
             <Link
                 href="/projects"
                 class="flex min-w-0 flex-1 items-center gap-2.5 rounded-md p-1 text-[13px] font-semibold text-foreground"
@@ -55,11 +57,11 @@ const isArchive = computed(
         </div>
         <nav
             aria-label="Workspace navigation"
-            class="flex-1 space-y-6 overflow-y-auto px-2 pt-5 pb-4 text-[13px]"
+            class="flex-1 space-y-4 overflow-y-auto px-2 pt-3 pb-4 text-[13px]"
         >
             <div class="space-y-1">
                 <p
-                    class="px-2 pb-1 text-[10px] font-medium tracking-[0.09em] text-muted-foreground uppercase"
+                    class="px-2 pb-1 text-[11px] font-semibold tracking-[0.06em] text-muted-foreground uppercase"
                 >
                     Workspace
                 </p>
@@ -70,10 +72,10 @@ const isArchive = computed(
                             ? 'page'
                             : undefined
                     "
-                    class="flex h-8.5 items-center gap-2.5 rounded-md border border-transparent px-2 transition-colors hover:bg-sidebar-accent"
+                    class="flex h-7.5 items-center gap-2.5 rounded-md border border-transparent px-2 transition-colors hover:bg-sidebar-accent"
                     :class="
                         url.startsWith('/projects') && !isArchive
-                            ? 'border-border bg-white font-medium text-foreground shadow-xs'
+                            ? 'border-border bg-card font-medium text-foreground shadow-xs'
                             : ''
                     "
                     @click="$emit('navigate')"
@@ -88,7 +90,7 @@ const isArchive = computed(
                     :aria-current="
                         url.startsWith('/admin') ? 'page' : undefined
                     "
-                    class="flex h-8.5 items-center gap-2.5 rounded-md px-2 hover:bg-sidebar-accent"
+                    class="flex h-7.5 items-center gap-2.5 rounded-md px-2 hover:bg-sidebar-accent"
                     :class="
                         url.startsWith('/admin')
                             ? 'bg-sidebar-accent font-medium'
@@ -103,7 +105,7 @@ const isArchive = computed(
                 <Link
                     href="/projects?status=archived"
                     :aria-current="isArchive ? 'page' : undefined"
-                    class="flex h-8.5 items-center gap-2.5 rounded-md px-2 hover:bg-sidebar-accent"
+                    class="flex h-7.5 items-center gap-2.5 rounded-md px-2 hover:bg-sidebar-accent"
                     :class="isArchive ? 'bg-sidebar-accent font-medium' : ''"
                     @click="$emit('navigate')"
                     ><WorkspaceIcon
@@ -115,7 +117,7 @@ const isArchive = computed(
             <div class="space-y-1">
                 <div class="flex items-center justify-between px-2 pb-1">
                     <p
-                        class="text-[10px] font-medium tracking-[0.09em] text-muted-foreground uppercase"
+                        class="text-[11px] font-semibold tracking-[0.06em] text-muted-foreground uppercase"
                     >
                         Projects
                     </p>
@@ -132,11 +134,11 @@ const isArchive = computed(
                     v-for="project in projects"
                     :key="project.id"
                     :href="`/projects/${project.id}`"
-                    class="flex min-h-8.5 items-center gap-2.5 rounded-md px-2 hover:bg-sidebar-accent"
+                    class="flex min-h-7.5 items-center gap-2.5 rounded-md px-2 hover:bg-sidebar-accent"
                     :class="
                         url.split('?')[0] === `/projects/${project.id}` ||
                         url.startsWith(`/projects/${project.id}/`)
-                            ? 'bg-white font-medium shadow-xs ring-1 ring-border'
+                            ? 'bg-card font-medium shadow-xs ring-1 ring-border'
                             : ''
                     "
                     @click="$emit('navigate')"
@@ -160,7 +162,7 @@ const isArchive = computed(
         >
             <Link
                 href="/account"
-                class="flex h-8.5 items-center gap-2.5 rounded-md px-2 hover:bg-sidebar-accent"
+                class="flex h-7.5 items-center gap-2.5 rounded-md px-2 hover:bg-sidebar-accent"
                 @click="$emit('navigate')"
                 ><WorkspaceIcon
                     name="settings"
@@ -171,7 +173,7 @@ const isArchive = computed(
                 href="/logout"
                 method="post"
                 as="button"
-                class="flex h-8.5 w-full items-center gap-2.5 rounded-md px-2 text-left hover:bg-sidebar-accent"
+                class="flex h-7.5 w-full items-center gap-2.5 rounded-md px-2 text-left hover:bg-sidebar-accent"
                 ><WorkspaceIcon
                     name="logout"
                     class="text-muted-foreground"

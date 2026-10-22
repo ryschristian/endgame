@@ -51,11 +51,13 @@ function submit() {
                 required
             />
             <fieldset class="space-y-3">
-                <legend class="mb-3 text-sm font-medium">Permissions</legend>
+                <legend class="mb-3 text-[12.5px] font-medium">
+                    Permissions
+                </legend>
                 <label
                     v-for="option in permissionOptions"
                     :key="option.value"
-                    class="flex items-center gap-3 text-sm"
+                    class="flex items-center gap-3 text-[12.5px]"
                 >
                     <input
                         v-model="form.permission_keys"
@@ -68,7 +70,7 @@ function submit() {
             <p
                 v-if="form.errors.permission_keys"
                 role="alert"
-                class="text-sm text-destructive"
+                class="text-[12.5px] text-destructive"
             >
                 {{ form.errors.permission_keys }}
             </p>
@@ -77,7 +79,7 @@ function submit() {
             v-for="(message, key) in form.errors"
             :key="key"
             role="alert"
-            class="text-sm text-destructive"
+            class="text-[12.5px] text-destructive"
         >
             {{ message }}
         </p>
