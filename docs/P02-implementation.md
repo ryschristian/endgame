@@ -1,6 +1,6 @@
 # P02 — Projects and access implementation
 
-Implemented on 2026-10-22 from the [approved P02 design](superpowers/specs/2026-10-22-p02-projects-access-design.md), following `AGENTS.md`, `FRONTEND.md`, and `BACKEND.md`. The work is on local branch `feat/p02-projects-access`.
+Implemented on 2026-10-22 from the [approved P02 design](superpowers/specs/2026-10-22-p02-projects-access-design.md), following `AGENTS.md`, `FRONTEND.md`, and `BACKEND.md`. P02 is merged into `main` at `43351c0`.
 
 ## Delivered behavior
 
@@ -68,4 +68,4 @@ The official Geist Sans variable font is self-hosted, bundled by Vite, and licen
 
 Projects use `Asia/Manila`. The service defaults omitted timezone input and rejects alternatives; forms do not submit or offer a timezone choice. `2026_10_22_000003_standardize_project_timezone.php` normalizes older project values transactionally, records each previous value in audit history, and increments revisions. Application timestamps remain UTC and card dates use Manila time. The migration is applied only to isolated tests during agent work.
 
-Actual MySQL and live SMTP verification remain operator checks; the available local SQL server is MariaDB 10.4.32. P03 tickets and the seeded P04 workflow need their own approved process design and implementation request. This work introduces no ticket, board, dashboard, repository, or agent functionality.
+On 2026-10-23, Endgame switched to actual MySQL Community Server 8.4.13 on port 3307, preserving all existing application data. The full SQL suite passed 118 tests / 647 assertions and all eight concurrency checks on MySQL. See [MySQL setup](MySQL-setup.md) and [HANDOFF.md](HANDOFF.md) for operation and verification. Live SMTP remains an operator check. P03 tickets and the seeded P04 workflow need their own approved process design and implementation request. This work introduces no ticket, board, dashboard, repository, or agent functionality.

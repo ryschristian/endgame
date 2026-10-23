@@ -115,7 +115,7 @@ It requires permission to create a test schema on the configured SQL server. It 
 
 ### Verified environment and limits
 
-- The configured local server is **MariaDB 10.4.32**, not MySQL. The normal suite also runs on isolated in-memory SQLite. Actual MySQL execution remains a deployment verification item.
+- The original SQL verification used **MariaDB 10.4.32**. On 2026-10-23, the application switched to actual MySQL 8.4.13 and the combined P01/P02 suite passed there; see [MySQL setup](MySQL-setup.md). The normal suite also runs on isolated in-memory SQLite.
 - The configured application database `endgame` did not exist. No application database was created or migrated. `.env` was not changed; explicitly update its session/mail settings before running P01.
 - Live SMTP delivery was not verified. Notifications are faked in feature tests; no external messages were sent.
 - Docker, Nginx, storage integrations, queue infrastructure, external identity providers, and future product modules were not installed.

@@ -27,18 +27,27 @@ php artisan key:generate
 
 Generate the application key once for a new environment. Preserve an existing environment's key.
 
-Set your existing MySQL server's connection details in `.env`:
+This machine uses **MySQL Community Server 8.4.13** at `127.0.0.1:3307`. Start it before starting Laravel:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/mysql.ps1 start
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/mysql.ps1 status
+```
+
+The script uses the private installation under `.setup/mysql`; it does not install a Windows service. Start MySQL again after restarting Windows. See [MySQL setup and migration](docs/MySQL-setup.md) for backup locations, verification, and stop instructions.
+
+The existing `.env` now points to MySQL with a generated local password. Preserve that file. For a fresh checkout or another machine, install an actual MySQL server and set its connection details in `.env`:
 
 ```dotenv
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
-DB_PORT=3306
+DB_PORT=3307
 DB_DATABASE=endgame
 DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-The database name and credentials are initial local defaults, not a verified connection. Enter the actual password directly in `.env`; never commit it. MySQL tables use InnoDB and `utf8mb4`. No MySQL server was installed and no migrations were run during foundation setup. Verify the target connection before running `php artisan migrate`. Tests that exercise database behavior must also run against a dedicated MySQL test database once those features exist.
+Use your server's actual port and password; never commit credentials. MySQL tables use InnoDB and `utf8mb4`. This machine's existing application database was copied from MariaDB and verified before switching connections. XAMPP's MariaDB remains on port 3306 as a fallback. Changing `DB_CONNECTION=mysql` alone does not change the server product. Verify `SELECT VERSION(), @@version_comment` before running migrations or SQL tests on another machine.
 
 P01 uses database-backed sessions and SMTP account notifications. Set `SESSION_DRIVER=database` and `MAIL_MAILER=smtp` in an existing `.env`; the old foundation settings are not overwritten automatically. Cache remains file-backed and jobs run synchronously. After verifying the database target, run `php artisan migrate` and `php artisan app:bootstrap-admin` once. Project permissions belong to P02.
 

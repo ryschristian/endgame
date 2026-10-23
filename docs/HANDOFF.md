@@ -2,9 +2,9 @@
 
 ## Current work
 
-P01 is merged into `main` at `cc43a60`. P02 is implemented on local branch `feat/p02-projects-access`. Read [P02-implementation.md](P02-implementation.md), the [approved P02 design](superpowers/specs/2026-10-22-p02-projects-access-design.md), and its [implementation plan](superpowers/plans/2026-10-22-p02-projects-access.md) before changing this work. P01 behavior is documented in [P01-implementation.md](P01-implementation.md).
+P01 and P02 are merged into `main`; P02's merge is `43351c0`. Read [P02-implementation.md](P02-implementation.md), the [approved P02 design](superpowers/specs/2026-10-22-p02-projects-access-design.md), and its [implementation plan](superpowers/plans/2026-10-22-p02-projects-access.md) before changing this work. P01 behavior is documented in [P01-implementation.md](P01-implementation.md).
 
-The user explicitly requested P02 implementation on 2026-10-22. Do not restart its approval or recreate existing code. The implementation is left as local working changes; no commit, push, merge, or deployment was performed.
+The user explicitly requested P02 implementation on 2026-10-22. Do not restart its approval or recreate existing code. On 2026-10-23, the user requested switching all active database configuration to actual MySQL. See [MySQL setup](MySQL-setup.md) for local operation and preserved backups. The MySQL switch has not been committed or deployed by the agent.
 
 ## Verification record
 
@@ -39,13 +39,22 @@ Latest workspace interface update (2026-10-22):
 - Desktop, creation-dialog, and mobile screenshots are saved in ignored `.p01-work/workspace-desktop.png`, `workspace-create-dialog.png`, and `workspace-mobile.png`; they were visually inspected. Fixture projects exist only in the isolated browser database.
 - Independent review found one responsive drawer issue, reproduced in the browser and fixed by closing the modal when entering the desktop breakpoint. No backend permission/timezone/migration defects were found in that review.
 
-See [workspace interface design](superpowers/specs/2026-10-22-workspace-interface-design.md) for the user's revised requirements. Existing pre-P02 global Pint failures, actual MySQL verification, and live SMTP limitations remain as documented above.
+See [workspace interface design](superpowers/specs/2026-10-22-workspace-interface-design.md) for the user's revised requirements. Existing pre-P02 global Pint failures and live SMTP limitations remain. The MariaDB results above are historical; actual MySQL verification follows.
+
+### MySQL switch — 2026-10-23
+
+- Active application connection: **MySQL Community Server 8.4.13**, `127.0.0.1:3307`, database `endgame`.
+- All 15 application tables were copied and verified against the original MariaDB data, including two accounts and one project. Four migration records were preserved; no application migration or seed was run.
+- Actual MySQL verification passed **118 Pest tests / 647 assertions** and **all 8 SQL concurrency checks**. Final retained schema after adding the MySQL-only runner guard: `endgame_p01_test_20261023005042_c350e959`; the earlier `endgame_p01_test_20261023004747_cdf92e22` is also retained. The MariaDB rejection check passed without creating a source-server test schema.
+- Local MySQL stop/start, repeated start, status, and Laravel reconnection passed. Use `scripts/mysql.ps1 start` after reboot; this local installation is not a Windows service.
+- The original MariaDB database and private SQL/environment backups remain available. Current configuration and setup instructions point to MySQL; historical MariaDB test records above remain accurate.
+- The SQL runner now rejects non-MySQL server products before creating a test schema. Live SMTP remains unverified.
 
 ## Operator setup still required
 
 The subsequent design-system foundation pass aligns root light tokens, the 252px sidebar, 46px top bar, compact shared controls, and existing account/project forms with [design-system.md](design-system.md). The New project dialog becomes a bottom sheet on small screens. Geist Sans and the fixed Manila timezone are preserved. Verification: 11 frontend tests and 9 Chromium journeys passed, with desktop/dialog/mobile screenshots inspected. No backend changes were made in this pass.
 
-1. Point `.env` at the intended existing **MySQL** server/database. The currently configured local server is MariaDB, and its `endgame` application database did not exist during implementation.
+1. Start local MySQL using the command in [MySQL setup](MySQL-setup.md). The existing `.env` already points to the verified MySQL server on port 3307. Preserve its generated password. On another environment, configure and verify that environment's actual MySQL server first.
 2. Set `SESSION_DRIVER=database` and configure a real SMTP mailer (`MAIL_MAILER=smtp`). The foundation's old file-session/log-mail environment values were not silently rewritten.
 3. Verify the database target, then run `php artisan migrate` using PHP 8.5. Do not use reset/truncate/fresh commands.
 4. On a new installation, run `php artisan app:bootstrap-admin` once. It prompts for the password without echoing it. Existing initialized installations must use their existing administrator.

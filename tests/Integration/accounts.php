@@ -18,10 +18,15 @@ $app = require $root.'/bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
 $config = config('database.connections.mysql');
 $server = new PDO("mysql:host={$config['host']};port={$config['port']}", $config['username'], $config['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+$serverVersion = $server->query('SELECT VERSION()')->fetchColumn();
+$serverProduct = $server->query('SELECT @@version_comment')->fetchColumn();
+if (stripos($serverVersion, 'MariaDB') !== false || stripos($serverProduct, 'MySQL') === false) {
+    throw new RuntimeException('SQL verification requires an actual MySQL server. Check DB_HOST and DB_PORT before continuing.');
+}
 $database = 'endgame_p01_test_'.date('YmdHis').'_'.bin2hex(random_bytes(4));
 // Only create a new schema with a generated identifier. Never reuse or drop a schema.
 $server->exec("CREATE DATABASE `$database` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-echo 'Server: '.$server->query('SELECT VERSION()')->fetchColumn().PHP_EOL;
+echo 'Server: '.$serverVersion.' ('.$serverProduct.')'.PHP_EOL;
 echo "Isolated test database: $database (retained; application database untouched)".PHP_EOL;
 $environment = [
     'APP_ENV' => 'testing', 'DB_CONNECTION' => 'mysql', 'DB_DATABASE' => $database, 'DB_URL' => '',

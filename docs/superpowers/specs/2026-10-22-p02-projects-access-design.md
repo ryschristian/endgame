@@ -134,3 +134,7 @@ After approval, write a task-by-task implementation plan, implement P02 with foc
 ## 10. Design review
 
 A separate builder review found one planning gap: direct addition could race invitation acceptance and replace newer role choices. The design now requires direct addition to revoke pending invitations and acceptance to reject existing active membership, under the same transaction locks. This was settled as an implementation-safety clarification. The user subsequently approved implementation of this document.
+
+
+
+

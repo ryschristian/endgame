@@ -229,7 +229,7 @@ No raw invitation token, token hash, password, session payload, or mail transpor
 ```mermaid
 flowchart TD
     Code["P01 and P02 source code\nand migrations are complete"]:::success
-    Tests["Automated verification complete:\n118 Pest tests / 647 assertions\n11 Vitest tests / 9 browser journeys\n8 MariaDB concurrency races"]:::success
+    Tests["Automated verification complete:\n118 Pest tests / 647 assertions\n11 Vitest tests / 9 browser journeys\n8 MySQL concurrency races"]:::success
     UI["Workspace design complete:\nGeist Sans, responsive navigation,\nproject grid/list, create dialog"]:::success
     Code --> Tests --> UI
 
@@ -247,4 +247,4 @@ flowchart TD
     classDef future fill:#f5f3f0,stroke:#aaa39a,color:#655f58,stroke-dasharray: 5 4;
 ```
 
-The isolated test migrations and retained MariaDB test schemas do not migrate the application database. Live SMTP delivery and execution on an actual MySQL server remain operator verification steps.
+The application now uses MySQL 8.4.13 on port 3307, with its existing MariaDB data copied and verified. The isolated test migrations and retained SQL test schemas do not migrate the application database. Actual MySQL verification passed 118 Pest tests / 647 assertions and all eight concurrency checks on 2026-10-23; live SMTP delivery remains an operator verification step. See [MySQL setup](../MySQL-setup.md).
