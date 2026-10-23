@@ -10,6 +10,11 @@ export interface SharedPageProps {
     auth: { user: AccountUser | null; canManageAccounts: boolean };
     flash: { status: string | null };
     passwordHint: string;
+    teamTimezone: string;
+    workspace: {
+        projects: { id: number; key: string; name: string }[];
+        canCreateProjects: boolean;
+    };
 }
 
 export interface AccountRow extends AccountUser {

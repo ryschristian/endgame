@@ -61,18 +61,18 @@ function submit() {
         <DialogPortal>
             <DialogOverlay class="fixed inset-0 z-40 bg-black/45" />
             <DialogContent
-                class="fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 space-y-5 rounded-xl border bg-background p-6 shadow-xl"
+                class="fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 space-y-4 rounded-xl border bg-background p-6 shadow-xl"
             >
                 <DialogTitle class="text-xl font-semibold">{{
                     title
                 }}</DialogTitle>
                 <DialogDescription
-                    class="text-sm leading-6 text-muted-foreground"
+                    class="text-[12.5px] leading-6 text-muted-foreground"
                     >Confirm this change for {{ target?.email }} with your
                     current password. Changes are recorded in the account
                     history.</DialogDescription
                 >
-                <form class="space-y-5" @submit.prevent="submit">
+                <form class="space-y-4" @submit.prevent="submit">
                     <FormField
                         id="confirm-current-password"
                         v-model="form.current_password"
@@ -85,7 +85,7 @@ function submit() {
                     <p
                         v-if="form.errors.account"
                         role="alert"
-                        class="text-sm text-destructive"
+                        class="text-[12.5px] text-destructive"
                     >
                         {{ form.errors.account }}
                     </p>
@@ -94,14 +94,14 @@ function submit() {
                             ><Button
                                 type="button"
                                 variant="outline"
-                                class="min-h-11"
+                                class="min-h-9 sm:min-h-7.5"
                                 :disabled="form.processing"
                                 >Cancel</Button
                             ></DialogClose
                         >
                         <Button
                             type="submit"
-                            class="min-h-11"
+                            class="min-h-9 sm:min-h-7.5"
                             :disabled="form.processing"
                             >{{
                                 form.processing ? 'Updating…' : 'Confirm change'

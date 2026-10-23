@@ -34,21 +34,21 @@ function changePassword() {
                 Manage your profile and keep your account secure.
             </p>
         </header>
-        <div class="grid items-start gap-6 md:grid-cols-2">
+        <div class="grid max-w-5xl items-start gap-4 xl:grid-cols-2">
             <section
-                class="space-y-6 rounded-xl border bg-card p-6"
+                class="space-y-4 rounded-[10px] border bg-card p-4 sm:p-5"
                 aria-labelledby="profile-title"
             >
                 <div>
-                    <h2 id="profile-title" class="text-lg font-semibold">
+                    <h2 id="profile-title" class="text-[14.5px] font-semibold">
                         Profile
                     </h2>
-                    <p class="mt-1 text-sm text-muted-foreground">
+                    <p class="mt-1 text-[12.5px] text-muted-foreground">
                         Your name is visible to your team.
                     </p>
                 </div>
                 <form
-                    class="space-y-5"
+                    class="space-y-4"
                     @submit.prevent="
                         profile.patch('/account', { preserveScroll: true })
                     "
@@ -62,22 +62,24 @@ function changePassword() {
                         required
                     />
                     <div class="space-y-2">
-                        <label for="account-email" class="text-sm font-medium"
+                        <label
+                            for="account-email"
+                            class="text-[12.5px] font-medium"
                             >Email</label
                         ><input
                             id="account-email"
                             :value="page.props.auth.user.email"
                             type="email"
                             readonly
-                            class="h-11 w-full rounded-md border bg-muted px-3 text-muted-foreground"
+                            class="h-9 w-full rounded-md border border-input bg-muted px-2.5 text-base text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/10 sm:h-7.5 sm:text-[13.5px]"
                         />
-                        <p class="text-sm text-muted-foreground">
+                        <p class="text-[12.5px] text-muted-foreground">
                             Your sign-in email is fixed for this account.
                         </p>
                     </div>
                     <Button
                         type="submit"
-                        class="min-h-11"
+                        class="min-h-9 sm:min-h-7.5"
                         :disabled="profile.processing"
                         >{{
                             profile.processing ? 'Saving…' : 'Save profile'
@@ -86,18 +88,18 @@ function changePassword() {
                 </form>
             </section>
             <section
-                class="space-y-6 rounded-xl border bg-card p-6"
+                class="space-y-4 rounded-[10px] border bg-card p-4 sm:p-5"
                 aria-labelledby="password-title"
             >
                 <div>
-                    <h2 id="password-title" class="text-lg font-semibold">
+                    <h2 id="password-title" class="text-[14.5px] font-semibold">
                         Change password
                     </h2>
-                    <p class="mt-1 text-sm text-muted-foreground">
+                    <p class="mt-1 text-[12.5px] text-muted-foreground">
                         Other sessions will be signed out after this change.
                     </p>
                 </div>
-                <form class="space-y-5" @submit.prevent="changePassword">
+                <form class="space-y-4" @submit.prevent="changePassword">
                     <FormField
                         id="current_password"
                         v-model="password.current_password"
@@ -128,7 +130,7 @@ function changePassword() {
                     />
                     <Button
                         type="submit"
-                        class="min-h-11"
+                        class="min-h-9 sm:min-h-7.5"
                         :disabled="password.processing"
                         >{{
                             password.processing

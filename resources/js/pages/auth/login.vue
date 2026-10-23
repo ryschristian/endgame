@@ -15,7 +15,7 @@ function submit() {
         title="Sign in"
         description="Welcome back. Sign in to your Endgame account."
     >
-        <form class="space-y-5" @submit.prevent="submit">
+        <form class="space-y-4" @submit.prevent="submit">
             <FormField
                 id="email"
                 v-model="form.email"
@@ -35,9 +35,9 @@ function submit() {
                 required
             />
             <div
-                class="flex flex-wrap items-center justify-between gap-3 text-sm"
+                class="flex flex-wrap items-center justify-between gap-3 text-[12.5px]"
             >
-                <label class="flex min-h-11 items-center gap-2"
+                <label class="flex min-h-9 items-center gap-2 sm:min-h-7.5"
                     ><input
                         v-model="form.remember"
                         type="checkbox"
@@ -53,11 +53,11 @@ function submit() {
             </div>
             <Button
                 type="submit"
-                class="min-h-11 w-full"
+                class="min-h-9 w-full sm:min-h-7.5"
                 :disabled="form.processing"
                 >{{ form.processing ? 'Signing in…' : 'Sign in' }}</Button
             >
-            <p class="text-center text-sm text-muted-foreground">
+            <p class="text-center text-[12.5px] text-muted-foreground">
                 New here? Ask your administrator for an invitation.
             </p>
         </form>

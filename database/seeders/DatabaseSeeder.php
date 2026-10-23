@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Required system data will be added with the approved product modules.
+       $this->call([
+            UserSeeder::class,
+        ]);
     }
 }

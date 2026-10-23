@@ -31,7 +31,7 @@ The primary product is a practical, **non-AI ticketing system**. Later phases ma
 
 **Flow:** Create project → add members → define roles → grant permissions → assign roles → authorize actions.
 
-- Create and maintain projects with a permanent project key, name, description, and timezone.
+- Create and maintain projects with a permanent project key, name, description, and the team's fixed `Asia/Manila` timezone (no timezone selector).
 - Invite/add/remove project members; one user may join multiple projects.
 - Create custom project roles such as Developer, Reviewer, or Coordinator.
 - Assign granular permissions to roles; a user may hold multiple roles.

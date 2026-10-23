@@ -1,5 +1,15 @@
 <?php
 
+use App\Models\AccountInvitation;
+use App\Models\ProjectInvitation;
+use App\Models\User;
+use App\Services\AccountService;
+use App\Services\ProjectService;
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Password;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
 // This fixture runner never opens the application's configured database.
 $root = dirname(__DIR__, 2);
 $database = getenv('DB_DATABASE');
@@ -19,16 +29,33 @@ if (! is_dir($workspace)) {
 touch($database);
 require $root.'/vendor/autoload.php';
 $app = require $root.'/bootstrap/app.php';
-$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+$app->make(Kernel::class)->bootstrap();
+Artisan::call('migrate', ['--force' => true]);
 
 $password = 'BrowserPassword123';
-$admin = app(App\Services\AccountService::class)->bootstrap('Browser Admin', 'admin@example.test', $password);
-$member = App\Models\User::factory()->create(['name' => 'Browser Member', 'email' => 'member@example.test', 'password' => $password]);
-$resetUser = App\Models\User::factory()->create(['name' => 'Reset User', 'email' => 'reset@example.test', 'password' => $password]);
+$admin = app(AccountService::class)->bootstrap('Browser Admin', 'admin@example.test', $password);
+$member = User::factory()->create(['name' => 'Browser Member', 'email' => 'member@example.test', 'password' => $password]);
+$resetUser = User::factory()->create(['name' => 'Reset User', 'email' => 'reset@example.test', 'password' => $password]);
 $invitationToken = bin2hex(random_bytes(32));
-App\Models\AccountInvitation::create(['email' => 'invited@example.test', 'token_hash' => hash('sha256', $invitationToken), 'invited_by' => $admin->id, 'expires_at' => now()->addHours(48)]);
-$resetToken = Illuminate\Support\Facades\Password::createToken($resetUser);
-file_put_contents($fixtureFile, json_encode(['password' => $password, 'invitationToken' => $invitationToken, 'resetToken' => $resetToken], JSON_THROW_ON_ERROR));
+AccountInvitation::create(['email' => 'invited@example.test', 'token_hash' => hash('sha256', $invitationToken), 'invited_by' => $admin->id, 'expires_at' => now()->addHours(48)]);
+$resetToken = Password::createToken($resetUser);
+$manager = User::factory()->create(['name' => 'Project Manager', 'email' => 'manager@example.test', 'password' => $password]);
+User::factory()->create(['name' => 'Project Member', 'email' => 'project-member@example.test', 'password' => $password]);
+$projectInvitee = User::factory()->create(['name' => 'Project Invitee', 'email' => 'project-invitee@example.test', 'password' => $password]);
+$projects = app(ProjectService::class);
+$project = $projects->create($admin, ['key' => 'TEAM', 'name' => 'Browser team', 'description' => 'A shared workspace for our product, design, and engineering work.', 'timezone' => 'Asia/Manila', 'manager_email' => $manager->email]);
+$reader = $projects->saveRole($manager, $project, 1, null, 'Fixture Reader', ['project.view']);
+$hidden = $projects->create($admin, ['key' => 'HIDDEN', 'name' => 'Private project', 'timezone' => 'Asia/Manila', 'manager_email' => $manager->email]);
+foreach ([
+    ['WEB', 'Website redesign', 'Create a clearer, more focused home for our product and the people who use it.'],
+    ['APP', 'Mobile app', 'Build a thoughtful mobile experience that keeps the team connected on the move.'],
+    ['LAUNCH', 'Product launch', 'Coordinate launch planning, documentation, and everything needed for release.'],
+] as [$key, $name, $description]) {
+    $projects->create($admin, ['key' => $key, 'name' => $name, 'description' => $description, 'manager_email' => $manager->email]);
+}
+$projectInvitationToken = bin2hex(random_bytes(32));
+$projectInvitation = ProjectInvitation::create(['project_id' => $project->id, 'user_id' => $projectInvitee->id, 'email' => $projectInvitee->email, 'invited_by' => $manager->id, 'token_hash' => hash('sha256', $projectInvitationToken), 'expires_at' => now()->addHours(48)]);
+$projectInvitation->roles()->sync([$reader->id => ['project_id' => $project->id]]);
+file_put_contents($fixtureFile, json_encode(['password' => $password, 'invitationToken' => $invitationToken, 'resetToken' => $resetToken, 'projectId' => $project->id, 'hiddenProjectId' => $hidden->id, 'projectInvitationToken' => $projectInvitationToken], JSON_THROW_ON_ERROR));
 
-exit(Illuminate\Support\Facades\Artisan::call('serve', ['--host' => '127.0.0.1', '--port' => 8001, '--no-reload' => true], new Symfony\Component\Console\Output\ConsoleOutput));
+exit(Artisan::call('serve', ['--host' => '127.0.0.1', '--port' => 8001, '--no-reload' => true], new ConsoleOutput));

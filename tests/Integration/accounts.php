@@ -2,8 +2,11 @@
 
 use App\Models\AccountInvitation;
 use App\Models\AuditEvent;
+use App\Models\ProjectInvitation;
 use App\Models\User;
 use App\Services\AccountService;
+use App\Services\ProjectService;
+use App\Support\ProjectPermissions;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -117,4 +120,41 @@ race('accept', ['token' => $token]);
 if (User::where('email', $invitation->email)->count() !== 1 || AuditEvent::where('action', 'invitation.accepted')->count() !== 1) {
     throw new RuntimeException('Concurrent acceptance did not preserve a single identity and audit event.');
 }
-echo 'PASS all SQL concurrency checks'.PHP_EOL;
+$projects = app(ProjectService::class);
+$firstManager = User::factory()->create();
+$secondManager = User::factory()->create();
+$project = $projects->create($remaining, ['key' => 'RACEONE', 'name' => 'Manager removal versus suspension', 'timezone' => 'Asia/Manila', 'manager_email' => $firstManager->email]);
+$managerRole = $project->roles()->firstOrFail();
+$projects->addMember($remaining, $project, 1, $secondManager->email, [$managerRole->id]);
+race('project-remove-suspend', ['actors' => [$remaining->id, $remaining->id], 'project_id' => $project->id, 'revision' => 2,
+    'member_id' => $project->members()->where('user_id', $firstManager->id)->firstOrFail()->id, 'suspend_user_id' => $secondManager->id]);
+$projects->ensureManager($project);
+
+$firstManager = User::factory()->create();
+$secondManager = User::factory()->create();
+$project = $projects->create($remaining, ['key' => 'RACETWO', 'name' => 'Role downgrade versus removal', 'timezone' => 'Asia/Manila', 'manager_email' => $firstManager->email]);
+$firstRole = $project->roles()->firstOrFail();
+$secondRole = $projects->saveRole($remaining, $project, 1, null, 'Second manager', ProjectPermissions::keys());
+$member = $projects->addMember($remaining, $project, 2, $secondManager->email, [$secondRole->id]);
+race('project-role-remove', ['actors' => [$remaining->id, $remaining->id], 'project_id' => $project->id, 'revision' => 3, 'role_id' => $firstRole->id, 'member_id' => $member->id]);
+$projects->ensureManager($project);
+
+$invitee = User::factory()->create();
+$token = bin2hex(random_bytes(32));
+$invitation = ProjectInvitation::create(['project_id' => $project->id, 'user_id' => $invitee->id, 'email' => $invitee->email, 'token_hash' => hash('sha256', $token), 'invited_by' => $remaining->id, 'expires_at' => now()->addHours(48)]);
+race('project-accept', ['actors' => [$invitee->id, $invitee->id], 'token' => $token]);
+if ($project->members()->where('user_id', $invitee->id)->count() !== 1 || AuditEvent::where('action', 'project.invitation_accepted')->count() !== 1) {
+    throw new RuntimeException('Project invitation race did not preserve one membership and audit event.');
+}
+$invitee = User::factory()->create();
+$token = bin2hex(random_bytes(32));
+$invitation = ProjectInvitation::create(['project_id' => $project->id, 'user_id' => $invitee->id, 'email' => $invitee->email, 'token_hash' => hash('sha256', $token), 'invited_by' => $remaining->id, 'expires_at' => now()->addHours(48)]);
+$reader = $projects->saveRole($remaining, $project, $project->fresh()->revision, null, 'Race reader', ['project.view']);
+$invitation->roles()->sync([$reader->id => ['project_id' => $project->id]]);
+race('project-add-accept', ['actors' => [$remaining->id, $invitee->id], 'project_id' => $project->id, 'revision' => $project->fresh()->revision, 'token' => $token, 'email' => $invitee->email]);
+$member = $project->members()->where('user_id', $invitee->id)->firstOrFail();
+$expectedRoles = $invitation->fresh()->accepted_at ? [$reader->id] : [];
+if ($member->roles()->pluck('roles.id')->all() !== $expectedRoles) {
+    throw new RuntimeException('Direct addition and invitation acceptance overwrote the winning role selection.');
+}
+echo 'PASS all P01/P02 SQL concurrency checks'.PHP_EOL;

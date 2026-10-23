@@ -12,7 +12,7 @@ const form = useForm({ email: '' });
         title="Reset your password"
         description="Enter your email and we’ll send a reset link if your account is eligible."
     >
-        <form class="space-y-5" @submit.prevent="form.post('/forgot-password')">
+        <form class="space-y-4" @submit.prevent="form.post('/forgot-password')">
             <FormField
                 id="email"
                 v-model="form.email"
@@ -24,13 +24,13 @@ const form = useForm({ email: '' });
             />
             <Button
                 type="submit"
-                class="min-h-11 w-full"
+                class="min-h-9 w-full sm:min-h-7.5"
                 :disabled="form.processing"
                 >{{ form.processing ? 'Sending…' : 'Send reset link' }}</Button
             >
             <Link
                 href="/login"
-                class="block py-2 text-center text-sm underline underline-offset-4"
+                class="block py-2 text-center text-[12.5px] underline underline-offset-4"
                 >Back to sign in</Link
             >
         </form>
