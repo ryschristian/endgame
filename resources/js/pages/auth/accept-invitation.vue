@@ -13,6 +13,7 @@ const form = useForm<{
     password_confirmation: string;
     token?: string;
 }>({ name: '', password: '', password_confirmation: '' });
+
 function submit() {
     if (!props.valid || !props.token) return;
     form.post(`/invitations/${props.token}`, {

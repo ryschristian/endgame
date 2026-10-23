@@ -32,6 +32,15 @@ const page = usePage<{ errors: Record<string, string> }>();
             class="flex gap-5 border-b text-xs"
         >
             <Link
+                v-if="can.tickets"
+                :href="`/projects/${project.id}/tickets`"
+                :aria-current="
+                    page.url?.includes('/tickets') ? 'page' : undefined
+                "
+                class="flex items-center gap-1.5 border-b-2 border-transparent pb-3 text-muted-foreground hover:text-foreground aria-[current=page]:border-foreground aria-[current=page]:text-foreground"
+                >Tickets</Link
+            >
+            <Link
                 :href="'/projects/' + project.id"
                 :aria-current="
                     page.url?.split('?')[0] === '/projects/' + project.id

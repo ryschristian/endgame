@@ -6,6 +6,7 @@ use App\Models\ProjectInvitation;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\ProjectService;
+use App\Services\TicketService;
 use App\Support\ProjectPermissions;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
@@ -54,7 +55,7 @@ if (! is_dir($workspace)) {
     mkdir($workspace, 0700, true);
 }
 
-function race(string $operation, array $values = []): void
+function race(string $operation, array $values = [], array $allowedResults = [['rejected', 'success']]): void
 {
     global $root, $workspace, $environment;
     $prefix = $workspace.'/race-'.bin2hex(random_bytes(6));
@@ -86,10 +87,10 @@ function race(string $operation, array $values = []): void
             $results[] = trim($process->getOutput());
         }
         sort($results);
-        if ($results !== ['rejected', 'success']) {
+        if (! in_array($results, $allowedResults, true)) {
             throw new RuntimeException("Expected exactly one successful $operation, got ".json_encode($results));
         }
-        echo "PASS concurrent $operation: exactly one succeeds".PHP_EOL;
+        echo "PASS concurrent $operation: ".implode(', ', $results).PHP_EOL;
     } finally {
         if (DB::transactionLevel()) {
             DB::rollBack();
@@ -163,3 +164,30 @@ if ($member->roles()->pluck('roles.id')->all() !== $expectedRoles) {
     throw new RuntimeException('Direct addition and invitation acceptance overwrote the winning role selection.');
 }
 echo 'PASS all P01/P02 SQL concurrency checks'.PHP_EOL;
+
+$project = $projects->create($remaining, ['key' => 'TICKETS', 'name' => 'Ticket races', 'manager_email' => $remaining->email]);
+$values = ['summary' => 'Concurrent ticket', 'work_type_id' => DB::table('work_types')->where('project_id', $project->id)->where('is_default', true)->value('id'), 'priority_id' => DB::table('priorities')->where('project_id', $project->id)->where('is_default', true)->value('id')];
+$actors = [$remaining->id, $remaining->id];
+race('ticket-create', ['actors' => $actors, 'project_id' => $project->id, 'values' => $values], [['success', 'success']]);
+if ($project->tickets()->count() !== 2 || $project->tickets()->distinct()->count('number') !== 2 || DB::table('project_counters')->where('project_id', $project->id)->value('next_number') !== 3) {
+    throw new RuntimeException('Concurrent ticket creation lost or reused a number.');
+}
+$ticket = $project->tickets()->firstOrFail();
+race('ticket-edit', ['actors' => $actors, 'project_id' => $project->id, 'ticket_id' => $ticket->id, 'revision' => 1, 'values' => $values]);
+if ($ticket->fresh()->revision !== 2 || $ticket->events()->count() !== 2) {
+    throw new RuntimeException('Concurrent edits overwrote data or lost history.');
+}
+$reader = $projects->saveRole($remaining, $project, $project->fresh()->revision, null, 'Assignable reader', ['project.view']);
+foreach (['suspend', 'remove'] as $operation) {
+    $target = User::factory()->create();
+    $member = $projects->addMember($remaining, $project, $project->fresh()->revision, $target->email, [$reader->id]);
+    $revision = $ticket->fresh()->revision;
+    race('ticket-assign-'.$operation, ['actors' => $actors, 'project_id' => $project->id, 'ticket_id' => $ticket->id, 'revision' => $revision, 'project_revision' => $project->fresh()->revision, 'target_id' => $target->id, 'member_id' => $member->id, 'values' => [...$values, 'summary' => 'Assignment versus '.$operation, 'assignee_id' => $target->id]], [['rejected', 'success'], ['success', 'success']]);
+    if (app(TicketService::class)->eligibleAssignee($project, $target->id)) {
+        throw new RuntimeException('Unavailable member remains eligible for new assignment.');
+    }
+    if ($ticket->events()->count() !== $ticket->fresh()->revision) {
+        throw new RuntimeException('Assignment race lost event/revision integrity.');
+    }
+}
+echo 'PASS all P03 SQL concurrency checks'.PHP_EOL;

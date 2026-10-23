@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Support\AccountRules;
 use App\Support\ProjectPermissions;
+use App\Support\TicketDefaults;
 use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
@@ -44,6 +45,7 @@ class ProjectService
             $manager = $this->eligibleUser($values['manager_email']);
             $values['timezone'] = Project::TEAM_TIMEZONE;
             $project = Project::create(collect($values)->only(['key', 'name', 'description', 'timezone'])->all());
+            TicketDefaults::initialize($project);
             $this->initializeManager($project, $manager);
             $this->audit($actor, $project, 'project.created', ['after' => $project->only(['key', 'name', 'description', 'timezone']), 'manager_id' => $manager->id]);
 
@@ -250,7 +252,7 @@ class ProjectService
     {
         $members = $project->members()->whereNull('removed_at')->whereHas('user', fn ($q) => $q->where('is_active', true))->with('user')->get();
         foreach ($members as $member) {
-            if (! array_diff(ProjectPermissions::keys(), $project->permissionKeys($member->user))) {
+            if (! array_diff(ProjectPermissions::managerKeys(), $project->permissionKeys($member->user))) {
                 return;
             }
         }

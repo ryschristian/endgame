@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 require_once __DIR__.'/Support/projects.php';
+require_once __DIR__.'/Support/tickets.php';
 
 uses(TestCase::class)->in('Feature');
 
@@ -20,4 +21,4 @@ uses()->beforeEach(function () {
     while (DB::transactionLevel() > 0) {
         DB::rollBack();
     }
-})->in('Feature/Accounts', 'Feature/Projects');
+})->in('Feature/Accounts', 'Feature/Projects', 'Feature/Tickets');

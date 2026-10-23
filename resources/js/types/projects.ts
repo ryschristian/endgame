@@ -15,6 +15,7 @@ export interface ProjectRow {
     statusLabel?: string;
 }
 export interface ProjectAccess {
+    tickets?: boolean;
     view: boolean;
     update: boolean;
     members: boolean;

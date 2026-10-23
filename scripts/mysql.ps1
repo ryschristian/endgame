@@ -23,7 +23,7 @@ function Test-MySqlConnection {
 
 if ($Action -eq 'start') {
     if (Test-MySqlConnection) {
-        Write-Output 'MySQL is already running on 127.0.0.1:3307.'
+        Write-Output 'MySQL is already running on 127.0.0.1:3306.'
         exit 0
     }
 
@@ -33,7 +33,7 @@ if ($Action -eq 'start') {
     for ($attempt = 0; $attempt -lt 30; $attempt++) {
         Start-Sleep -Seconds 1
         if (Test-MySqlConnection) {
-            Write-Output 'MySQL started on 127.0.0.1:3307.'
+            Write-Output 'MySQL started on 127.0.0.1:3306.'
             exit 0
         }
     }

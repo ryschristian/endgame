@@ -5,8 +5,10 @@ use App\Models\ProjectInvitation;
 use App\Models\User;
 use App\Services\AccountService;
 use App\Services\ProjectService;
+use App\Services\TicketService;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -30,6 +32,9 @@ touch($database);
 require $root.'/vendor/autoload.php';
 $app = require $root.'/bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
+if (! $app->environment('e2e') || config('database.default') !== 'sqlite' || config('database.connections.sqlite.database') !== $database || config('database.connections.sqlite.url')) {
+    throw new RuntimeException('Resolved browser configuration must use the isolated SQLite fixture.');
+}
 Artisan::call('migrate', ['--force' => true]);
 
 $password = 'BrowserPassword123';
@@ -44,6 +49,7 @@ User::factory()->create(['name' => 'Project Member', 'email' => 'project-member@
 $projectInvitee = User::factory()->create(['name' => 'Project Invitee', 'email' => 'project-invitee@example.test', 'password' => $password]);
 $projects = app(ProjectService::class);
 $project = $projects->create($admin, ['key' => 'TEAM', 'name' => 'Browser team', 'description' => 'A shared workspace for our product, design, and engineering work.', 'timezone' => 'Asia/Manila', 'manager_email' => $manager->email]);
+app(TicketService::class)->create($manager, $project, ['summary' => 'Review project scope', 'work_type_id' => DB::table('work_types')->where('project_id', $project->id)->where('is_default', true)->value('id'), 'priority_id' => DB::table('priorities')->where('project_id', $project->id)->where('is_default', true)->value('id')]);
 $reader = $projects->saveRole($manager, $project, 1, null, 'Fixture Reader', ['project.view']);
 $hidden = $projects->create($admin, ['key' => 'HIDDEN', 'name' => 'Private project', 'timezone' => 'Asia/Manila', 'manager_email' => $manager->email]);
 foreach ([

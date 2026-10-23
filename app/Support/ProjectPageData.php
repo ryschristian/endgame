@@ -21,6 +21,7 @@ class ProjectPageData
         foreach (['view' => 'view', 'update' => 'update', 'members' => 'members.manage', 'roles' => 'roles.manage', 'archive' => 'archive', 'restore' => 'restore'] as $name => $key) {
             $can[$name] = $project->allows($user, 'project.'.$key);
         }
+        $can['tickets'] = $project->allows($user, 'project.view') && $project->allows($user, 'ticket.view');
 
         return ['project' => [...$project->only(['id', 'key', 'name', 'description', 'timezone', 'archived_at', 'revision']), 'statusLabel' => $project->archived_at ? 'Archived' : 'Active'], 'can' => $can];
     }

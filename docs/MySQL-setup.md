@@ -1,6 +1,6 @@
 # Local MySQL setup — 2026-10-23
 
-Endgame now uses **MySQL Community Server 8.4.13 LTS** at `127.0.0.1:3307`, database `endgame`. Laravel uses the `mysql` connection and PHP 8.5's PDO MySQL driver. XAMPP's MariaDB 10.4.32 remains on port 3306; Endgame no longer connects to it.
+Endgame now uses **MySQL Community Server 8.4.13 LTS** at `127.0.0.1:3306`, database `endgame_import_20261023033240`. Laravel uses the `mysql` connection and PHP 8.5's PDO MySQL driver. On the user's explicit request, XAMPP's MariaDB installation was removed after copying and verifying all its user databases. See [MariaDB retirement](MariaDB-retirement.md) for the final database mapping and complete installation archive. The original MySQL `endgame` database remains intact as an older copy.
 
 ## Local operation
 
@@ -26,7 +26,7 @@ Private files under the Git-ignored `.setup/mysql` directory:
 
 The installation directory's Windows permissions are restricted to the current user, Administrators, and SYSTEM. Keep its credentials and backups private. `.env.example` contains no password; a fresh machine needs its own MySQL installation and credentials.
 
-## Data preserved
+## Initial data preservation (before the later retirement)
 
 The existing MariaDB application database was exported with a consistent transactional dump while Laravel was in maintenance mode, then imported into a new MySQL `endgame` database. Every row in all **15 tables** was compared using hashes, with timestamp sessions normalized to UTC on both servers. Both accounts, the existing project, permission data, audit history, and all four migration records were preserved. The original MariaDB database was not changed or removed.
 
@@ -36,7 +36,7 @@ The original database is a snapshot fallback: writes made after the switch exist
 
 ## Verification
 
-- A fresh Laravel/PDO connection reported `8.4.13`, `MySQL Community Server - GPL`, port `3307`.
+- The initial switch reported `8.4.13`, `MySQL Community Server - GPL`, port `3307`; after retiring MariaDB, the same MySQL server now uses port `3306`.
 - Stop, start, repeated start, and status commands passed; Laravel reconnected after restart.
 - The existing SQL runner passed **118 Pest tests / 647 assertions** and **all 8 account/project concurrency checks** against actual MySQL.
 - The SQL runner checks the server product before creating a test schema and rejects MariaDB.

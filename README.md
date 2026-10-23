@@ -1,6 +1,6 @@
 # Endgame
 
-Laravel 13 modular monolith with PHP 8.5, Vue 3, TypeScript, Inertia 3, Vite, Tailwind CSS 4, and shadcn-vue. P01 accounts/authentication is implemented. See [P01 implementation](docs/P01-implementation.md) and [handoff notes](docs/HANDOFF.md) for its behavior, setup, and verification.
+Laravel 13 modular monolith with PHP 8.5, Vue 3, TypeScript, Inertia 3, Vite, Tailwind CSS 4, and shadcn-vue. Accounts, project access, and P03 ticket management are implemented. See [P03 implementation](docs/P03-implementation.md) and [handoff notes](docs/HANDOFF.md) for behavior, setup, and verification.
 
 Read [AGENTS.md](AGENTS.md), [SDD.md](docs/SDD.md), [FRONTEND.md](FRONTEND.md), and [BACKEND.md](BACKEND.md) before making changes. The document review and setup scope are recorded in [the setup plan](docs/setup-plan.md).
 
@@ -27,7 +27,7 @@ php artisan key:generate
 
 Generate the application key once for a new environment. Preserve an existing environment's key.
 
-This machine uses **MySQL Community Server 8.4.13** at `127.0.0.1:3307`. Start it before starting Laravel:
+This machine uses **MySQL Community Server 8.4.13** at `127.0.0.1:3306`. MariaDB has been removed after its user databases were copied and verified. Start MySQL before starting Laravel:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/mysql.ps1 start
@@ -36,18 +36,18 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/mysql.ps1 status
 
 The script uses the private installation under `.setup/mysql`; it does not install a Windows service. Start MySQL again after restarting Windows. See [MySQL setup and migration](docs/MySQL-setup.md) for backup locations, verification, and stop instructions.
 
-The existing `.env` now points to MySQL with a generated local password. Preserve that file. For a fresh checkout or another machine, install an actual MySQL server and set its connection details in `.env`:
+The existing `.env` points to MySQL database `endgame_import_20261023033240`, preserving the newest application data without overwriting the older MySQL `endgame` copy. Preserve that file and its generated password. For a fresh checkout or another machine, install MySQL and set that machine's connection details in `.env`:
 
 ```dotenv
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
-DB_PORT=3307
+DB_PORT=3306
 DB_DATABASE=endgame
 DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-Use your server's actual port and password; never commit credentials. MySQL tables use InnoDB and `utf8mb4`. This machine's existing application database was copied from MariaDB and verified before switching connections. XAMPP's MariaDB remains on port 3306 as a fallback. Changing `DB_CONNECTION=mysql` alone does not change the server product. Verify `SELECT VERSION(), @@version_comment` before running migrations or SQL tests on another machine.
+Use your server's actual port and password; never commit credentials. MySQL tables use InnoDB and `utf8mb4`. All six former MariaDB user databases have verified MySQL copies, and a complete private installation archive is retained; see [MariaDB retirement](docs/MariaDB-retirement.md). Changing `DB_CONNECTION=mysql` alone does not change the server product. Verify `SELECT VERSION(), @@version_comment` before running migrations or SQL tests on another machine.
 
 P01 uses database-backed sessions and SMTP account notifications. Set `SESSION_DRIVER=database` and `MAIL_MAILER=smtp` in an existing `.env`; the old foundation settings are not overwritten automatically. Cache remains file-backed and jobs run synchronously. After verifying the database target, run `php artisan migrate` and `php artisan app:bootstrap-admin` once. Project permissions belong to P02.
 

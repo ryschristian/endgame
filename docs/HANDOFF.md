@@ -1,6 +1,16 @@
-# Endgame handoff — P01 and P02
+# Endgame handoff — P01, P02 and P03
 
 ## Current work
+
+Latest operator request (2026-10-23): the user asked to stop the standalone MySQL background process because it occupied XAMPP's port 3306. It was shut down cleanly and the port was verified free. Database files and backups remain intact. Do not automatically restart this server during unrelated work; the user must explicitly request database startup. Endgame database access is unavailable while it is stopped. XAMPP's former MariaDB installation remains removed as previously requested.
+
+P03 ticket management is implemented locally on `feat/p03-ticket-management`. Read [P03 implementation](P03-implementation.md), its [approved design](superpowers/specs/2026-10-23-p03-ticket-management-design.md), and [plan](superpowers/plans/2026-10-23-p03-ticket-management.md). The user confirmed P03 only; the draggable Kanban reference is for the next phase. Preserve the revised page-local frontend structure in `pages/tickets/_components`.
+
+Current database: **MySQL Community Server 8.4.13 on port 3306**, schema **`endgame_import_20261023033240`**. All five migrations are applied in that preserved copy. The user explicitly requested complete MariaDB removal: its six user databases were copied/verified, its entire stopped installation archived, then `C:\xampp\mysql` was removed. The older MySQL `endgame` copy remains untouched. See [MariaDB retirement](MariaDB-retirement.md) for mappings/backups; earlier port-3307 records below are historical.
+
+Final P03 checks: **143 Pest tests / 788 assertions on actual MySQL**, **12 SQL race checks**, **15 Vitest tests**, **10 Chromium journeys**, TypeScript and production build passed. Final retained SQL schema: `endgame_p01_test_20261023033623_21307895`. Scoped formatting was run; unrelated user edits remain preserved. No commit, push, merge or live SMTP delivery was performed by the agent.
+
+Existing custom roles intentionally did not acquire ticket permissions automatically. Use a System Admin to explicitly grant `ticket.view`, `ticket.create`, `ticket.update`, and/or `ticket.configure` through project Roles. New projects' initial manager roles receive the full catalog. Keep last-manager checks tied to the six original project keys.
 
 P01 and P02 are merged into `main`; P02's merge is `43351c0`. Read [P02-implementation.md](P02-implementation.md), the [approved P02 design](superpowers/specs/2026-10-22-p02-projects-access-design.md), and its [implementation plan](superpowers/plans/2026-10-22-p02-projects-access.md) before changing this work. P01 behavior is documented in [P01-implementation.md](P01-implementation.md).
 
@@ -54,7 +64,7 @@ See [workspace interface design](superpowers/specs/2026-10-22-workspace-interfac
 
 The subsequent design-system foundation pass aligns root light tokens, the 252px sidebar, 46px top bar, compact shared controls, and existing account/project forms with [design-system.md](design-system.md). The New project dialog becomes a bottom sheet on small screens. Geist Sans and the fixed Manila timezone are preserved. Verification: 11 frontend tests and 9 Chromium journeys passed, with desktop/dialog/mobile screenshots inspected. No backend changes were made in this pass.
 
-1. Start local MySQL using the command in [MySQL setup](MySQL-setup.md). The existing `.env` already points to the verified MySQL server on port 3307. Preserve its generated password. On another environment, configure and verify that environment's actual MySQL server first.
+1. Start local MySQL using the command in [MySQL setup](MySQL-setup.md). The existing `.env` points to the verified MySQL server on port 3306 and schema `endgame_import_20261023033240`. Preserve its generated password. On another environment, configure and verify that environment's actual MySQL server first.
 2. Set `SESSION_DRIVER=database` and configure a real SMTP mailer (`MAIL_MAILER=smtp`). The foundation's old file-session/log-mail environment values were not silently rewritten.
 3. Verify the database target, then run `php artisan migrate` using PHP 8.5. Do not use reset/truncate/fresh commands.
 4. On a new installation, run `php artisan app:bootstrap-admin` once. It prompts for the password without echoing it. Existing initialized installations must use their existing administrator.
@@ -86,4 +96,4 @@ After migrating, System Admins can open `/projects`, create a project, and selec
 
 ## Next product work
 
-P03 ticket management and the seeded P04 workflow need their own reviewed process specification and explicit implementation request. Later assignee selection must check P01 account activity and current P02 project membership. No ticket workflow, project dashboard, repository integration, or coding-agent execution is implemented here.
+P03 ticket management is complete. Seeded P04 lifecycle operations and P05 persistent draggable boards need the next reviewed process specification. Use the supplied Kanban screenshot as the next phase's layout reference, with backend-authorized transitions and saved ordering. Current ticket edits cannot change workflow state. No dashboard, repository integration, coding-agent execution, comments, or attachments are implemented here.

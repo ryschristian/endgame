@@ -11,19 +11,45 @@ Keep folder nesting shallow. The example below is a convention, not a reason to 
 
 ```text
 resources/js/
-├── pages/                # One page component per Inertia route
+├── pages/
+│   ├── dashboard/
+│   │   ├── index.vue
+│   │   └── _components/
+│   │       ├── stats-cards.vue
+│   │       └── recent-activity.vue
+│   │
+│   ├── tickets/
+│   │   ├── index.vue
+│   │   ├── create.vue
+│   │   ├── edit.vue
+│   │   ├── show.vue
+│   │   │
+│   │   └── _components/
+│   │       ├── ticket-table.vue
+│   │       ├── ticket-form.vue
+│   │       ├── ticket-filters.vue
+│   │       └── ticket-status-badge.vue
+│   │
+│   └── settings/
+│       ├── profile.vue
+│       └── _components/
+│           └── profile-form.vue
+│
+├── features/                 # Optional, when needed
 │   └── tickets/
-│       └── index.vue
-├── features/             # Feature-specific UI and behavior
-│   └── tickets/
-│       ├── ticket-table.vue
-│       ├── ticket-form.vue
-│       └── ticket-filters.vue
-├── components/ui/        # Existing shadcn-vue primitives
+│       ├── use-ticket-filters.ts
+│       └── types.ts
+│
+├── components/
+│   ├── ui/                   # shadcn-vue
+│   ├── page-header.vue
+│   ├── confirm-dialog.vue
+│   └── empty-state.vue
+│
 ├── layouts/
-├── composables/          # Truly shared reactive logic
-├── lib/                  # Pure utilities
-└── types/                # Shared cross-feature types
+├── composables/
+├── lib/
+└── types/
 ```
 
 - Keep feature-specific components, composables, and types close to the feature.
@@ -31,6 +57,10 @@ resources/js/
 - Avoid `components/`, `hooks/`, `utils/`, `services/` subtrees inside every feature without a need.
 - Prefer **kebab-case filenames** throughout the app (`ticket-form.vue`, `use-ticket-filters.ts`). Keep imported Vue component tags consistently PascalCase.
 - Follow the actual configured Inertia page resolver and existing conventions.
+
+
+## SHADCN
+- install and utilize shadcn's different components  (calendars, combobox for dropdowns, dropdown menu, range calendar), maximize drawers and dialogs for forms to avoid too much pages.
 
 ## 3. Components and composables
 - Pages receive typed Inertia props and compose the page; they should not contain large tables, complex forms, and multiple dialogs all in one file.
@@ -83,6 +113,7 @@ Please use the latest shadcn design
 - Avoid needless network requests, repeated heavy calculations, and duplicate reactive state.
 - Prefer straightforward solutions before introducing a table engine, global store, or caching library.
 - Ensure UI reflects server-confirmed state after saves and transitions.
+- install tanstack table for tables make it simple and maintanable codes as much as possible when coding tables
 
 ## 9. Testing and changes
 - Use Vitest for meaningful component and composable behavior; Playwright for essential user journeys as appropriate.
@@ -91,4 +122,8 @@ Please use the latest shadcn design
 - Keep changes scoped; inspect related pages, components, props, and tests first.
 - Follow `AGENTS.md` and relevant `docs/SDD.md`/phase specifications when they exist.
 
+
 **Rule: simple components, clear data flow, and few levels of folders.**
+
+
+

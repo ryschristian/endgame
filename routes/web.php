@@ -9,6 +9,8 @@ use App\Http\Controllers\ProjectInvitationController;
 use App\Http\Controllers\ProjectMemberController;
 use App\Http\Controllers\ProjectRoleController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\TicketCatalogController;
+use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -36,6 +38,12 @@ Route::middleware(['auth', 'can:manage-accounts'])->prefix('admin')->group(funct
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/projects/{project}/tickets', [TicketController::class, 'index'])->name('tickets.index');
+    Route::get('/projects/{project}/ticket-assignees', [TicketController::class, 'assignees'])->name('tickets.assignees');
+    Route::get('/projects/{project}/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
+    Route::post('/projects/{project}/tickets', [TicketController::class, 'store'])->middleware('throttle:account-management')->name('tickets.store');
+    Route::patch('/projects/{project}/tickets/{ticket}', [TicketController::class, 'update'])->middleware('throttle:account-management')->name('tickets.update');
+    Route::post('/projects/{project}/ticket-catalogs/{catalog}', [TicketCatalogController::class, 'save'])->middleware('throttle:account-management')->name('tickets.catalogs.save');
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
     Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
