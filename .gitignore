@@ -24,6 +24,7 @@
 /.setup
 /playwright-report
 /test-results
+/.p01-work
 _ide_helper.php
 Homestead.json
 Homestead.yaml

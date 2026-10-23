@@ -15,6 +15,12 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'appName' => config('app.name'),
+            'passwordHint' => 'Use at least 12 characters, including letters and numbers.',
+            'auth' => [
+                'user' => $request->user()?->only(['id', 'name', 'email']),
+                'canManageAccounts' => $request->user()?->can('manage-accounts') ?? false,
+            ],
+            'flash' => fn () => ['status' => $request->session()->get('status')],
         ];
     }
 }

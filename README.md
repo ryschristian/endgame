@@ -1,6 +1,6 @@
 # Endgame
 
-Laravel 13 modular monolith with PHP 8.5, Vue 3, TypeScript, Inertia 3, Vite, Tailwind CSS 4, and shadcn-vue. The installed application is a minimal foundation; product modules require their approved process specifications.
+Laravel 13 modular monolith with PHP 8.5, Vue 3, TypeScript, Inertia 3, Vite, Tailwind CSS 4, and shadcn-vue. P01 accounts/authentication is implemented. See [P01 implementation](docs/P01-implementation.md) and [handoff notes](docs/HANDOFF.md) for its behavior, setup, and verification.
 
 Read [AGENTS.md](AGENTS.md), [SDD.md](docs/SDD.md), [FRONTEND.md](FRONTEND.md), and [BACKEND.md](BACKEND.md) before making changes. The document review and setup scope are recorded in [the setup plan](docs/setup-plan.md).
 
@@ -40,7 +40,7 @@ DB_PASSWORD=
 
 The database name and credentials are initial local defaults, not a verified connection. Enter the actual password directly in `.env`; never commit it. MySQL tables use InnoDB and `utf8mb4`. No MySQL server was installed and no migrations were run during foundation setup. Verify the target connection before running `php artisan migrate`. Tests that exercise database behavior must also run against a dedicated MySQL test database once those features exist.
 
-Sessions and cache use Laravel's local file drivers, and jobs run synchronously so the application shell does not depend on database tables or background workers. Laravel's built-in session authentication and policy support are available; account screens, invitations, and project permissions belong to P01/P02.
+P01 uses database-backed sessions and SMTP account notifications. Set `SESSION_DRIVER=database` and `MAIL_MAILER=smtp` in an existing `.env`; the old foundation settings are not overwritten automatically. Cache remains file-backed and jobs run synchronously. After verifying the database target, run `php artisan migrate` and `php artisan app:bootstrap-admin` once. Project permissions belong to P02.
 
 Start the application and Vite together:
 
@@ -67,7 +67,7 @@ npx.cmd playwright install chromium
 npm.cmd run test:e2e
 ```
 
-Playwright starts a separate Laravel server on port 8001 and uses the production assets, so run the build first and stop any Vite process that has left `public/hot` active. The smoke checks cover initial Inertia rendering, client page data, the Vue component, browser JavaScript startup, and navigation to the health endpoint. No smoke check claims to verify a live MySQL connection.
+Playwright starts a separate Laravel server on port 8001 with a new isolated SQLite fixture database and uses production assets. Run the build first and stop any Vite process that has left `public/hot` active. Journeys cover invitation acceptance, authentication, profile changes, password reset, suspension, CSRF protection, and health. `composer run test:sql` creates a new isolated test schema on the configured SQL server and additionally checks concurrent account operations; see the P01 notes before running it. No application database is reset or reused for fixtures.
 
 Vitest uses Vue Test Utils 2.4 to support the installed Node 24.14 release. TypeScript is constrained to 5.9 because the installed Vue type checker still requires the pre-TypeScript-7 compiler entry point.
 
