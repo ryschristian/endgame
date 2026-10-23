@@ -78,9 +78,13 @@ test('a manager configures a role, adds a member, and archives and restores the 
         .getByRole('alertdialog')
         .getByRole('button', { name: 'Confirm', exact: true })
         .click();
+    await page
+        .getByRole('button', { name: 'Edit project', exact: true })
+        .click();
     await expect(
         page.getByRole('button', { name: 'Save settings', exact: true }),
     ).toBeDisabled();
+    await page.keyboard.press('Escape');
     await page
         .getByRole('button', { name: 'Restore project', exact: true })
         .click();
@@ -88,9 +92,13 @@ test('a manager configures a role, adds a member, and archives and restores the 
         .getByRole('alertdialog')
         .getByRole('button', { name: 'Confirm', exact: true })
         .click();
+    await page
+        .getByRole('button', { name: 'Edit project', exact: true })
+        .click();
     await expect(
         page.getByRole('button', { name: 'Save settings', exact: true }),
     ).toBeEnabled();
+    await page.keyboard.press('Escape');
     expect(errors).toEqual([]);
 });
 

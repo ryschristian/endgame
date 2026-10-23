@@ -38,7 +38,11 @@ class TicketService
             $counter = DB::table('project_counters')->where('project_id', $project->id)->lockForUpdate()->firstOrFail();
             $number = $counter->next_number;
             DB::table('project_counters')->where('project_id', $project->id)->increment('next_number');
-            $ticket = $project->tickets()->create([...$values, 'number' => $number, 'key' => $project->key.'-'.str_pad((string) $number, 5, '0', STR_PAD_LEFT), 'reporter_id' => $actor->id, 'state' => 'open', 'revision' => 1]);
+            $workflow = app(WorkflowService::class)->current($project);
+            $state = $workflow->definition['initial'];
+            $rank = ($project->tickets()->where('state', $state)->max('board_rank') ?? 0) + 1;
+            $ticket = $project->tickets()->create([...$values, 'number' => $number, 'key' => $project->key.'-'.str_pad((string) $number, 5, '0', STR_PAD_LEFT), 'reporter_id' => $actor->id, 'workflow_version_id' => $workflow->id, 'state' => $state, 'board_rank' => $rank, 'revision' => 1]);
+            $project->increment('board_revision');
             $ticket->events()->create(['actor_id' => $actor->id, 'action' => 'created', 'changes' => ['before' => null, 'after' => $this->snapshot($ticket)], 'created_at' => now()]);
 
             return $ticket;
@@ -75,7 +79,15 @@ class TicketService
             $values['summary'] = trim($values['summary']);
         }
         $rules = ['summary' => ['required', 'string', 'max:255'], 'description' => ['nullable', 'string', 'max:50000'], 'acceptance_criteria' => ['nullable', 'string', 'max:20000'], 'work_type_id' => ['required', 'integer'], 'priority_id' => ['required', 'integer'], 'assignee_id' => ['nullable', 'integer', 'min:1'], 'estimate' => ['nullable', 'numeric', 'min:0', 'max:9999.99', 'decimal:0,2'], 'due_date' => ['nullable', 'date_format:Y-m-d']];
-        foreach (['project_id', 'key', 'number', 'reporter_id', 'state', 'status', 'resolution', 'resolution_id', 'resolved_at', 'completed_at', 'workflow_id', 'workflow_version_id', 'workflow_status_id', 'revision'] as $field) {
+        $rules['start_date'] = ['nullable', 'date_format:Y-m-d'];
+        if ($ticket) {
+            $values = [...['start_date' => $ticket->start_date?->format('Y-m-d'), 'due_date' => $ticket->due_date?->format('Y-m-d')], ...$values];
+        }
+        $start = $values['start_date'] ?? null;
+        if ($start) {
+            $rules['due_date'][] = 'after_or_equal:'.$start;
+        }
+        foreach (['project_id', 'key', 'number', 'reporter_id', 'state', 'status', 'resolution', 'resolution_id', 'resolved_at', 'completed_at', 'workflow_id', 'workflow_version_id', 'workflow_status_id', 'board_rank', 'revision'] as $field) {
             $rules[$field] = ['missing'];
         }
         $data = Validator::make($values, $rules)->validate();
@@ -102,7 +114,8 @@ class TicketService
 
     private function snapshot(Ticket $ticket): array
     {
-        $values = $ticket->only(['key', 'summary', 'description', 'acceptance_criteria', 'work_type_id', 'priority_id', 'reporter_id', 'assignee_id', 'estimate', 'state']);
+        $values = $ticket->only(['key', 'summary', 'description', 'acceptance_criteria', 'work_type_id', 'priority_id', 'reporter_id', 'assignee_id', 'estimate', 'state', 'workflow_version_id']);
+        $values['start_date'] = $ticket->start_date?->format('Y-m-d');
         $values['due_date'] = $ticket->due_date?->format('Y-m-d');
         $values['work_type'] = DB::table('work_types')->where('id', $ticket->work_type_id)->value('name');
         $values['priority'] = DB::table('priorities')->where('id', $ticket->priority_id)->value('name');

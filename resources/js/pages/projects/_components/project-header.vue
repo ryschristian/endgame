@@ -2,8 +2,25 @@
 import WorkspaceIcon from '@/components/workspace-icon.vue';
 import type { ProjectPageProps } from '@/types/projects';
 import { Link, usePage } from '@inertiajs/vue3';
+import {
+    CalendarDays,
+    Columns3,
+    GanttChart,
+    LayoutGrid,
+    List,
+    Settings2,
+    Table2,
+} from '@lucide/vue';
 defineProps<ProjectPageProps>();
 const page = usePage<{ errors: Record<string, string> }>();
+const views = [
+    { key: '', label: 'Overview', icon: LayoutGrid },
+    { key: 'board', label: 'Board', icon: Columns3 },
+    { key: 'list', label: 'List', icon: List },
+    { key: 'table', label: 'Table', icon: Table2 },
+    { key: 'calendar', label: 'Calendar', icon: CalendarDays },
+    { key: 'timeline', label: 'Timeline', icon: GanttChart },
+];
 </script>
 <template>
     <div class="space-y-5">
@@ -29,26 +46,35 @@ const page = usePage<{ errors: Record<string, string> }>();
         </div>
         <nav
             aria-label="Project navigation"
-            class="flex gap-5 border-b text-xs"
+            class="flex gap-5 overflow-x-auto border-b text-xs whitespace-nowrap"
         >
             <Link
-                v-if="can.tickets"
-                :href="`/projects/${project.id}/tickets`"
+                v-for="view in views.filter((v) => !v.key || can.tickets)"
+                :key="view.key"
+                :href="`/projects/${project.id}${view.key ? '/' + view.key : ''}`"
                 :aria-current="
-                    page.url?.includes('/tickets') ? 'page' : undefined
-                "
-                class="flex items-center gap-1.5 border-b-2 border-transparent pb-3 text-muted-foreground hover:text-foreground aria-[current=page]:border-foreground aria-[current=page]:text-foreground"
-                >Tickets</Link
-            >
-            <Link
-                :href="'/projects/' + project.id"
-                :aria-current="
-                    page.url?.split('?')[0] === '/projects/' + project.id
+                    page.url?.split('?')[0] ===
+                        `/projects/${project.id}${view.key ? '/' + view.key : ''}` ||
+                    (view.key === 'table' && page.url?.includes('/tickets'))
                         ? 'page'
                         : undefined
                 "
                 class="flex items-center gap-1.5 border-b-2 border-transparent pb-3 text-muted-foreground hover:text-foreground aria-[current=page]:border-foreground aria-[current=page]:text-foreground"
-                ><WorkspaceIcon name="grid" class="size-3.5" />Overview</Link
+                ><component :is="view.icon" class="size-3.5" />{{
+                    view.label
+                }}</Link
+            >
+            <Link
+                v-if="can.update"
+                :href="`/projects/${project.id}/workflow`"
+                :aria-current="
+                    page.url?.split('?')[0] ===
+                    `/projects/${project.id}/workflow`
+                        ? 'page'
+                        : undefined
+                "
+                class="flex items-center gap-1.5 border-b-2 border-transparent pb-3 text-muted-foreground hover:text-foreground aria-[current=page]:border-foreground aria-[current=page]:text-foreground"
+                ><Settings2 class="size-3.5" />Workflow setup</Link
             >
             <Link
                 v-if="can.members"

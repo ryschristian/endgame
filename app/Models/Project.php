@@ -20,7 +20,7 @@ class Project extends Model
 
     protected function casts(): array
     {
-        return ['archived_at' => 'datetime', 'revision' => 'integer'];
+        return ['archived_at' => 'datetime', 'revision' => 'integer', 'board_revision' => 'integer'];
     }
 
     public function members(): HasMany

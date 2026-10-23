@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import FormField from '@/features/accounts/form-field.vue';
+import FormField from '@/pages/_components/form-field.vue';
 import type { Option, RoleRow } from '@/types/projects';
 import { useForm } from '@inertiajs/vue3';
 const props = defineProps<{

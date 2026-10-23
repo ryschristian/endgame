@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import FormField from '@/features/accounts/form-field.vue';
+import FormField from '@/pages/_components/form-field.vue';
 import AuthLayout from '@/layouts/auth-layout.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 

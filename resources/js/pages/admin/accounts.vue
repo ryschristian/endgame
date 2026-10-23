@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import AccessChangeDialog from '@/features/accounts/access-change-dialog.vue';
-import FormField from '@/features/accounts/form-field.vue';
-import PaginationControls from '@/features/accounts/pagination-controls.vue';
+import AccessChangeDialog from '@/pages/admin/_components/access-change-dialog.vue';
+import FormField from '@/pages/_components/form-field.vue';
+import PaginationControls from '@/pages/_components/pagination-controls.vue';
 import AccountLayout from '@/layouts/account-layout.vue';
 import type {
     AccountRow,

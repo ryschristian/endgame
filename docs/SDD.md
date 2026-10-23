@@ -46,6 +46,7 @@ The primary product is a practical, **non-AI ticketing system**. Later phases ma
 
 - Create Task, Bug, and Story tickets using configurable work-type records.
 - Record summary, description, priority, reporter, optional assignee, acceptance criteria, estimate, and due date.
+- The project workspace also supports an optional start date, with due date on or after start date when both are set.
 - Generate a stable project-scoped key, e.g. `END-00024`.
 - Edit permitted fields, assign/reassign work, and view ticket details/history.
 - Search, filter, sort, and paginate authorized tickets.
@@ -60,6 +61,7 @@ The primary product is a practical, **non-AI ticketing system**. Later phases ma
 - Execute transitions through one backend workflow operation, with permission and input validation.
 - Record resolution outcome and completion time; reopen with a reason while retaining prior history.
 - Allow project managers, in the workflow phase, to define statuses, allowed transitions, and review/QA checkpoints.
+- Workflow setup is project-scoped and available to System Admins and authorized project managers. Column names, order, colors, initial stage and transitions come from the saved workflow rather than fixed frontend stages.
 - Publish workflow changes as versions and handle existing tickets without silently changing their historical meaning.
 
 **Rules:** Status, priority, and resolution are separate concepts. Invalid transitions change nothing. Approvals apply only where configured. Workflow versions used by tickets remain traceable.
@@ -72,6 +74,7 @@ The primary product is a practical, **non-AI ticketing system**. Later phases ma
 - Drag/drop cards to request permitted transitions; show validation errors when a move is blocked.
 - Provide a backlog with manual ordering and basic priority management.
 - Filter by assignee, work type, priority, and status; support text/key search.
+- Provide project Overview, Board, List, Table, Calendar and Timeline views of the same authorized tickets, with persisted ordering/dates and success/error toast feedback.
 - Show simple counts for open, in-progress, resolved, and overdue tickets.
 
 **Rules:** The ticket record is the source of truth; boards do not duplicate ticket state. All board moves use the same backend transition rules as ticket details. Unauthorized tickets are excluded from cards and counts.

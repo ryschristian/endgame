@@ -1,5 +1,6 @@
 import type { Paginated } from '@/types/accounts';
 import type { ProjectPageProps } from '@/types/projects';
+import type { Workflow } from '@/pages/projects/_components/workspace-types';
 
 export interface Choice {
     value: number;
@@ -28,6 +29,15 @@ export interface TicketRow {
     updated_at: string;
     revision: number;
     stateLabel: string;
+    state?: string;
+    stateColor?: string;
+    completed?: boolean;
+    start_date?: string | null;
+    resolution?: string | null;
+    completed_at?: string | null;
+    workflow_version_id?: number;
+    board_rank?: number;
+    allowedStates?: string[];
     workType: { id: number; name: string };
     priority: { id: number; name: string };
     assignee: { id: number; name: string } | null;
@@ -44,11 +54,14 @@ export interface HistoryEvent {
     action: string;
     created_at: string;
     changes: {
+        reason?: string | null;
         before: Record<string, unknown> | null;
         after: Record<string, unknown>;
     };
 }
 export interface TicketProps extends ProjectPageProps {
+    workflow?: Workflow;
+    boardRevision?: number;
     selectedAssignee?: { id: number; name: string } | null;
     ticketCan: {
         view: boolean;

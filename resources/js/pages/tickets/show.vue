@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import AccountLayout from '@/layouts/account-layout.vue';
-import ProjectHeader from '@/features/projects/project-header.vue';
+import ProjectHeader from '@/pages/projects/_components/project-header.vue';
 import TicketDetails from './_components/ticket-details.vue';
 import type { TicketProps } from './_components/types';
 import type { SharedPageProps } from '@/types/accounts';

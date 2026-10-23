@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import FormField from '@/features/accounts/form-field.vue';
+import FormField from '@/pages/_components/form-field.vue';
 import type { ProjectRow } from '@/types/projects';
 import { useForm } from '@inertiajs/vue3';
 
@@ -15,12 +15,16 @@ const form = useForm({
     manager_email: '',
     revision: props.project?.revision,
 });
+const emit = defineEmits<{ saved: [] }>();
 function submit() {
     if (props.project?.archived_at) return;
     if (props.project) {
         form.transform(
             ({ key: _key, manager_email: _manager, ...data }) => data,
-        ).patch(`/projects/${props.project.id}`, { preserveScroll: true });
+        ).patch(`/projects/${props.project.id}`, {
+            preserveScroll: true,
+            onSuccess: () => emit('saved'),
+        });
     } else {
         form.transform(({ revision: _revision, ...data }) => data).post(
             '/projects',

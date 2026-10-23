@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Services\ProjectService;
+use App\Services\WorkflowService;
 use App\Support\ProjectPageData;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -55,7 +56,7 @@ class ProjectController extends Controller
         ProjectPageData::authorize($request->user(), $project);
         $members = $project->members()->whereNull('removed_at')->with(['user:id,name', 'roles:id,name'])->orderBy('id')->paginate(20)->withQueryString()
             ->through(fn ($m) => ['id' => $m->id, 'name' => $m->user->name, 'roles' => $m->roles->pluck('name')]);
-        $props = [...ProjectPageData::shared($request->user(), $project), 'members' => $members];
+        $props = [...ProjectPageData::shared($request->user(), $project), 'members' => $members, 'workflow' => app(WorkflowService::class)->current($project)->only(['id', 'version', 'definition']), 'overview' => $project->allows($request->user(), 'ticket.view') ? ProjectWorkspaceController::overview($project) : null];
 
         return Inertia::render('projects/show', $props);
     }

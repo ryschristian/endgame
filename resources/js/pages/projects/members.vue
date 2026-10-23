@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import AccountLayout from '@/layouts/account-layout.vue';
-import ProjectHeader from '@/features/projects/project-header.vue';
-import MemberForm from '@/features/projects/member-form.vue';
-import MemberRow from '@/features/projects/member-row.vue';
-import InvitationRow from '@/features/projects/invitation-row.vue';
-import PaginationControls from '@/features/accounts/pagination-controls.vue';
+import ProjectHeader from '@/pages/projects/_components/project-header.vue';
+import MemberForm from '@/pages/projects/_components/member-form.vue';
+import MemberRow from '@/pages/projects/_components/member-row.vue';
+import InvitationRow from '@/pages/projects/_components/invitation-row.vue';
+import PaginationControls from '@/pages/_components/pagination-controls.vue';
 import type { SharedPageProps, Paginated } from '@/types/accounts';
 import type {
     ProjectPageProps,

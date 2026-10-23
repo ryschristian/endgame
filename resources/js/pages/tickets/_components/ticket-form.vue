@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
-import FormField from '@/features/accounts/form-field.vue';
+import FormField from '@/pages/_components/form-field.vue';
 import ChoiceCombobox from './choice-combobox.vue';
 import AssigneeCombobox from './assignee-combobox.vue';
 import TicketDatePicker from './ticket-date-picker.vue';
@@ -15,6 +15,7 @@ const props = defineProps<{
     disabled: boolean;
 }>();
 const emit = defineEmits<{ saved: [] }>();
+const page = usePage();
 // Keep the revision the editor opened with, even if page props refresh during editing.
 const initialRevision = props.ticket?.revision;
 const form = useForm({
@@ -30,6 +31,7 @@ const form = useForm({
     assignee_id: props.ticket?.assignee_id ?? (null as number | null),
     estimate: props.ticket?.estimate ?? '',
     due_date: props.ticket?.due_date ?? (null as string | null),
+    start_date: props.ticket?.start_date ?? (null as string | null),
 });
 function submit() {
     if (props.disabled || form.processing) return;
@@ -42,7 +44,17 @@ function submit() {
             `/projects/${props.projectId}/tickets/${props.ticket.id}`,
             options,
         );
-    else form.post(`/projects/${props.projectId}/tickets`, options);
+    else {
+        const view = page.url?.split('?')[0]?.split('/').pop();
+        form.transform((data) => ({
+            ...data,
+            ...(['board', 'list', 'table', 'calendar', 'timeline'].includes(
+                view ?? '',
+            )
+                ? { return_view: view }
+                : {}),
+        })).post(`/projects/${props.projectId}/tickets`, options);
+    }
 }
 </script>
 <template>
@@ -76,6 +88,10 @@ function submit() {
                     :project-id="projectId"
                     :initial="ticket?.assignee"
                     :label="labels.assignee_id"
+                    :disabled="disabled || form.processing"
+                /><TicketDatePicker
+                    v-model="form.start_date"
+                    :label="labels.start_date ?? 'Start date'"
                     :disabled="disabled || form.processing"
                 /><TicketDatePicker
                     v-model="form.due_date"

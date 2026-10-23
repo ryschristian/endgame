@@ -20,4 +20,9 @@ class TicketEvent extends Model
     {
         return $this->belongsTo(User::class, 'actor_id');
     }
+
+    public function ticket(): BelongsTo
+    {
+        return $this->belongsTo(Ticket::class);
+    }
 }

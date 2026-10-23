@@ -5,8 +5,11 @@ import TicketHistory from './ticket-history.vue';
 import TicketFormDialog from './ticket-form-dialog.vue';
 import type { TicketProps } from './types';
 import { teamDate } from './types';
+import TicketStatusSelect from '@/pages/projects/_components/ticket-status-select.vue';
+import TicketTransitionDialog from '@/pages/projects/_components/ticket-transition-dialog.vue';
 defineProps<{ data: TicketProps }>();
 const editing = ref(false);
+const target = ref<string | null>(null);
 const initials = (name: string) =>
     name
         .split(/\s+/)
@@ -38,10 +41,20 @@ const initials = (name: string) =>
                     {{ data.fieldLabels.state }}
                 </dt>
                 <dd class="flex items-center gap-2">
+                    <TicketStatusSelect
+                        v-if="data.ticketCan.update && data.workflow"
+                        :ticket="data.selectedTicket"
+                        :statuses="data.workflow.definition.statuses"
+                        :disabled="Boolean(data.project.archived_at)"
+                        @change="target = $event"
+                    />
                     <span
+                        v-else
                         aria-hidden="true"
                         class="size-3 rounded-full border border-stone-400"
-                    />{{ data.selectedTicket.stateLabel }}
+                    /><span v-if="!data.ticketCan.update || !data.workflow">{{
+                        data.selectedTicket.stateLabel
+                    }}</span>
                 </dd>
             </div>
             <div
@@ -53,6 +66,10 @@ const initials = (name: string) =>
                     {
                         label: data.fieldLabels.priority_id,
                         value: data.selectedTicket.priority.name,
+                    },
+                    {
+                        label: data.fieldLabels.start_date,
+                        value: teamDate(data.selectedTicket.start_date ?? null),
                     },
                     {
                         label: data.fieldLabels.due_date,
@@ -93,6 +110,27 @@ const initials = (name: string) =>
                 </dd>
             </div>
         </dl>
+        <p
+            v-if="data.selectedTicket.resolution"
+            class="mt-4 text-xs text-muted-foreground"
+        >
+            Resolution:
+            {{
+                data.workflow?.definition.resolutions.find(
+                    (r) => r.key === data.selectedTicket?.resolution,
+                )?.label ?? data.selectedTicket.resolution
+            }}
+            · {{ teamDate(data.selectedTicket.completed_at ?? null, true) }}
+        </p>
+        <TicketTransitionDialog
+            v-if="target && data.workflow"
+            :key="target"
+            :project-id="data.project.id"
+            :ticket="data.selectedTicket"
+            :state="target"
+            :workflow="data.workflow"
+            @close="target = null"
+        />
         <section
             v-for="field in ['description', 'acceptance_criteria'] as const"
             :key="field"

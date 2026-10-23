@@ -8,9 +8,11 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectInvitationController;
 use App\Http\Controllers\ProjectMemberController;
 use App\Http\Controllers\ProjectRoleController;
+use App\Http\Controllers\ProjectWorkspaceController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\TicketCatalogController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\WorkflowController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -38,6 +40,12 @@ Route::middleware(['auth', 'can:manage-accounts'])->prefix('admin')->group(funct
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/projects/{project}/workflow', [WorkflowController::class, 'edit'])->name('projects.workflow');
+    Route::post('/projects/{project}/workflow', [WorkflowController::class, 'publish'])->middleware('throttle:account-management')->name('projects.workflow.publish');
+    Route::get('/projects/{project}/{view}', [ProjectWorkspaceController::class, 'index'])->whereIn('view', ['board', 'list', 'table', 'calendar', 'timeline'])->name('projects.workspace');
+    Route::post('/projects/{project}/tickets/{ticket}/transition', [WorkflowController::class, 'transition'])->middleware('throttle:account-management')->name('tickets.transition');
+    Route::post('/projects/{project}/tickets/{ticket}/move', [WorkflowController::class, 'move'])->middleware('throttle:account-management')->name('tickets.move');
+    Route::patch('/projects/{project}/tickets/{ticket}/schedule', [WorkflowController::class, 'schedule'])->middleware('throttle:account-management')->name('tickets.schedule');
     Route::get('/projects/{project}/tickets', [TicketController::class, 'index'])->name('tickets.index');
     Route::get('/projects/{project}/ticket-assignees', [TicketController::class, 'assignees'])->name('tickets.assignees');
     Route::get('/projects/{project}/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AccountLayout from '@/layouts/account-layout.vue';
-import ProjectForm from '@/features/projects/project-form.vue';
+import ProjectForm from '@/pages/projects/_components/project-form.vue';
 import type { SharedPageProps } from '@/types/accounts';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 defineProps<{ teamTimezone: string }>();

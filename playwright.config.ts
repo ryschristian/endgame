@@ -26,6 +26,7 @@ export default defineConfig({
         },
     ],
     webServer: {
+        timeout: 120_000,
         command: 'php tests/e2e/serve.php',
         url: 'http://127.0.0.1:8001/up',
         reuseExistingServer: false,

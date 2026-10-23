@@ -20,7 +20,7 @@ class TicketController extends Controller
     {
         TicketPageData::authorize($request->user(), $project);
         $filters = $request->validate(['q' => ['nullable', 'string', 'max:255'], 'work_type_id' => ['nullable', 'integer', Rule::exists('work_types', 'id')->where('project_id', $project->id)], 'priority_id' => ['nullable', 'integer', Rule::exists('priorities', 'id')->where('project_id', $project->id)], 'assignee_id' => ['nullable', 'regex:/^(unassigned|[0-9]+)$/'], 'due_from' => ['nullable', 'date_format:Y-m-d'], 'due_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:due_from'], 'sort' => ['nullable', Rule::in(['number', 'summary', 'priority', 'due_date', 'updated_at'])], 'direction' => ['nullable', Rule::in(['asc', 'desc'])], 'per_page' => ['nullable', 'integer', 'min:1', 'max:100'], 'ticket' => ['nullable', 'integer']]);
-        $selected = ! empty($filters['ticket']) ? $project->tickets()->with(['workType', 'priority', 'assignee', 'reporter'])->findOrFail($filters['ticket']) : null;
+        $selected = ! empty($filters['ticket']) ? $project->tickets()->with(['workType', 'priority', 'assignee', 'workflowVersion', 'reporter'])->findOrFail($filters['ticket']) : null;
         $selectedAssignee = null;
         if (! empty($filters['assignee_id']) && $filters['assignee_id'] !== 'unassigned') {
             $member = $project->members()->where('user_id', $filters['assignee_id'])->with('user:id,name')->first();
@@ -31,7 +31,7 @@ class TicketController extends Controller
         }
         $sort = $filters['sort'] ?? 'updated_at';
         $direction = $filters['direction'] ?? 'desc';
-        $tickets = $project->tickets()->select('tickets.*')->with(['workType', 'priority', 'assignee'])
+        $tickets = $project->tickets()->select('tickets.*')->with(['workType', 'priority', 'assignee', 'workflowVersion'])
             ->when($filters['q'] ?? null, fn ($q, $term) => $q->where(fn ($q) => $q->where('summary', 'like', '%'.$term.'%')->orWhere('key', 'like', '%'.$term.'%')))
             ->when($filters['work_type_id'] ?? null, fn ($q, $id) => $q->where('work_type_id', $id))
             ->when($filters['priority_id'] ?? null, fn ($q, $id) => $q->where('priority_id', $id))
@@ -59,7 +59,12 @@ class TicketController extends Controller
     public function store(Request $request, Project $project, TicketService $service): RedirectResponse
     {
         TicketPageData::authorize($request->user(), $project, 'create');
-        $ticket = $service->create($request->user(), $project, $request->except(['_token']));
+        $return = $request->validate(['return_view' => ['nullable', Rule::in(['board', 'list', 'table', 'calendar', 'timeline'])]]);
+        $ticket = $service->create($request->user(), $project, $request->except(['_token', 'return_view']));
+
+        if (! empty($return['return_view'])) {
+            return redirect()->route('projects.workspace', ['project' => $project, 'view' => $return['return_view'], 'ticket' => $ticket->id])->with('status', 'Ticket created.');
+        }
 
         return redirect()->route('tickets.index', ['project' => $project, 'ticket' => $ticket->id])->with('status', 'Ticket created.');
     }

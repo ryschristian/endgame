@@ -6,12 +6,16 @@
 - Favor predictable, accessible UI and code a junior developer can navigate.
 - Use Inertia for Laravel-backed pages and forms; do not add Vue Router, a separate API layer, or a data-fetching library without a concrete need.
 
-## 2. Simple, feature-first structure
+## 2. Simple, page-owned structure
 Keep folder nesting shallow. The example below is a convention, not a reason to move working code unnecessarily:
 
 ```text
 resources/js/
 ├── pages/
+│   ├── _components/           # shared page controls
+│   │   ├── form-field.vue
+│   │   ├── pagination-controls.vue
+│   │   └── activity-toasts.vue
 │   ├── dashboard/
 │   │   ├── index.vue
 │   │   └── _components/
@@ -35,16 +39,9 @@ resources/js/
 │       └── _components/
 │           └── profile-form.vue
 │
-├── features/                 # Optional, when needed
-│   └── tickets/
-│       ├── use-ticket-filters.ts
-│       └── types.ts
-│
 ├── components/
-│   ├── ui/                   # shadcn-vue
-│   ├── page-header.vue
-│   ├── confirm-dialog.vue
-│   └── empty-state.vue
+│   ├── ui/                   # shadcn-vue primitives
+│   └── workspace-icon.vue
 │
 ├── layouts/
 ├── composables/
@@ -52,7 +49,8 @@ resources/js/
 └── types/
 ```
 
-- Keep feature-specific components, composables, and types close to the feature.
+- Keep page-specific components, composables, tests, and types in that page module's `_components` folder under `pages/`. Do not create `resources/js/features`.
+- Use `pages/_components` for controls genuinely shared across page modules, such as form fields and pagination. Keep shadcn primitives in `components/ui` and the application shell in `layouts`.
 - Place only genuinely reused UI or logic in shared folders.
 - Avoid `components/`, `hooks/`, `utils/`, `services/` subtrees inside every feature without a need.
 - Prefer **kebab-case filenames** throughout the app (`ticket-form.vue`, `use-ticket-filters.ts`). Keep imported Vue component tags consistently PascalCase.

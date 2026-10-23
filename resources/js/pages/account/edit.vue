@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import FormField from '@/features/accounts/form-field.vue';
+import FormField from '@/pages/_components/form-field.vue';
 import AccountLayout from '@/layouts/account-layout.vue';
 import type { SharedPageProps } from '@/types/accounts';
 import { Head, useForm, usePage } from '@inertiajs/vue3';

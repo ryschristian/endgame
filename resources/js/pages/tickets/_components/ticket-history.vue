@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PaginationControls from '@/features/accounts/pagination-controls.vue';
+import PaginationControls from '@/pages/_components/pagination-controls.vue';
 import type { Paginated } from '@/types/accounts';
 import type { HistoryEvent } from './types';
 import { teamDate } from './types';
@@ -62,6 +62,12 @@ const changes = (event: HistoryEvent) =>
                     </dd>
                 </div>
             </dl>
+            <p
+                v-if="event.changes.reason"
+                class="rounded-md bg-muted px-3 py-2"
+            >
+                Reopening reason: {{ event.changes.reason }}
+            </p>
         </article>
         <PaginationControls
             :current-page="history.current_page"

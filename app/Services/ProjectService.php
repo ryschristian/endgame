@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Support\AccountRules;
 use App\Support\ProjectPermissions;
 use App\Support\TicketDefaults;
+use App\Support\WorkflowDefaults;
 use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
@@ -46,6 +47,7 @@ class ProjectService
             $values['timezone'] = Project::TEAM_TIMEZONE;
             $project = Project::create(collect($values)->only(['key', 'name', 'description', 'timezone'])->all());
             TicketDefaults::initialize($project);
+            WorkflowDefaults::initialize($project);
             $this->initializeManager($project, $manager);
             $this->audit($actor, $project, 'project.created', ['after' => $project->only(['key', 'name', 'description', 'timezone']), 'manager_id' => $manager->id]);
 

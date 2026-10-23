@@ -15,7 +15,12 @@ class Ticket extends Model
 
     protected function casts(): array
     {
-        return ['revision' => 'integer', 'number' => 'integer', 'estimate' => 'decimal:2', 'due_date' => 'date:Y-m-d'];
+        return ['revision' => 'integer', 'number' => 'integer', 'board_rank' => 'integer', 'estimate' => 'decimal:2', 'due_date' => 'date:Y-m-d', 'start_date' => 'date:Y-m-d', 'completed_at' => 'datetime'];
+    }
+
+    public function workflowVersion(): BelongsTo
+    {
+        return $this->belongsTo(WorkflowVersion::class);
     }
 
     public function project(): BelongsTo

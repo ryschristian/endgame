@@ -1,6 +1,16 @@
-# Endgame handoff — P01, P02 and P03
+# Endgame handoff — accounts, projects, tickets and workspace views
 
 ## Current work
+
+Latest feature request (2026-10-23): six functional project views, activity toasts, page-owned frontend components, and dynamic workflows configured by admins/project managers are implemented locally on `feat/project-workspace-views`. Read [workspace implementation](project-workspace-implementation.md) and its [design](superpowers/specs/2026-10-23-project-workspace-views-design.md). This explicit request supersedes the earlier P03-only board deferral below.
+
+**Actual MySQL deployment remains pending.** A final read-only check found `c:\xampp\mysql\bin\mysqld.exe` already running **MariaDB 10.4.32** on port 3306; `.env` currently selects its **`endgame`** database. That database already records `2026_10_23_000005_create_project_workflows`. The agent did not start this server, change `.env`, or apply/reset application migrations during this feature. Do not mistake Laravel's `mysql` driver for proof of the server product. Leave the existing server/data untouched; the standalone MySQL stop instruction below remains in force. After the operator explicitly starts/selects the intended actual MySQL target, check its migration history and apply the additive migration if pending. Verification used isolated SQLite only; actual MySQL migration and concurrency checks remain pending.
+
+The new Workflow setup screen uses `project.update` plus project visibility; ticket changes use existing ticket permissions. It publishes immutable workflow versions, maps existing tickets without changing completion category, and records lifecycle/order/date changes. The frontend `features` directory is removed; page controls and tests now live under page modules' `_components`, with shared page controls in `pages/_components`.
+
+Current verification: **158 Pest tests / 977 assertions** on SQLite, **20 Vitest tests**, **all 11 Chromium journeys**, TypeScript, production build, frontend formatting and scoped Pint passed. The final affected PHP recheck passed 85 tests / 623 assertions after the last page-data/defaults changes. Browser verification includes dynamic five-stage publication, board persistence, completion/reopening, date editing, scheduled and unscheduled Timeline dragging, reload persistence, all views and mobile width. Desktop/mobile screenshots were visually inspected. Two independent review findings were reproduced and fixed. See the implementation record for limitations and setup.
+
+### Previous P03 handoff
 
 Latest operator request (2026-10-23): the user asked to stop the standalone MySQL background process because it occupied XAMPP's port 3306. It was shut down cleanly and the port was verified free. Database files and backups remain intact. Do not automatically restart this server during unrelated work; the user must explicitly request database startup. Endgame database access is unavailable while it is stopped. XAMPP's former MariaDB installation remains removed as previously requested.
 

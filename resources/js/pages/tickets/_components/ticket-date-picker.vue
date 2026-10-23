@@ -38,7 +38,7 @@ const date = computed({
                 type="button"
                 variant="ghost"
                 :disabled="disabled || !model"
-                aria-label="Clear due date"
+                :aria-label="`Clear ${props.label.toLowerCase()}`"
                 @click="model = null"
                 >×</Button
             >

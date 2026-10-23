@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import FormField from '@/features/accounts/form-field.vue';
+import FormField from '@/pages/_components/form-field.vue';
 import RolePicker from './role-picker.vue';
 import type { Option } from '@/types/projects';
 import { useForm } from '@inertiajs/vue3';

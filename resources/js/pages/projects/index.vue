@@ -2,9 +2,9 @@
 import { Button } from '@/components/ui/button';
 import WorkspaceIcon from '@/components/workspace-icon.vue';
 import AccountLayout from '@/layouts/account-layout.vue';
-import ProjectCard from '@/features/projects/project-card.vue';
-import ProjectCreateDialog from '@/features/projects/project-create-dialog.vue';
-import PaginationControls from '@/features/accounts/pagination-controls.vue';
+import ProjectCard from '@/pages/projects/_components/project-card.vue';
+import ProjectCreateDialog from '@/pages/projects/_components/project-create-dialog.vue';
+import PaginationControls from '@/pages/_components/pagination-controls.vue';
 import type { SharedPageProps, Paginated } from '@/types/accounts';
 import type { Option, ProjectListRow } from '@/types/projects';
 import { Head, router, usePage } from '@inertiajs/vue3';

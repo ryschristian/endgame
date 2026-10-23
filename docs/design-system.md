@@ -10,7 +10,9 @@ Exact values below were read from the deployed [stylesheet](https://gr8r-taskman
 
 No browser session was available during this review. Desktop appearance is supported by the supplied screenshots; mobile layouts, dark mode, animations, and keyboard behavior are documented from source declarations, without live interaction verification. A CSS declaration is not proof that a control works or is accessible in practice.
 
-The comparison with Endgame uses `resources/css/app.css`, `resources/js/layouts/account-layout.vue`, and `resources/js/features/projects/project-card.vue`. This document does not change application behavior or approve new product modules.
+The comparison with Endgame uses `resources/css/app.css`, `resources/js/layouts/account-layout.vue`, and `resources/js/pages/projects/_components/project-card.vue` (relocated from `features/projects` on 2026-10-23). This document does not change application behavior or approve new product modules.
+
+The later project workspace request uses the newly supplied white/indigo screenshots for Overview and ticket views. Those pages apply local indigo action/focus tokens while preserving the shared shell. See [workspace implementation](project-workspace-implementation.md) for the working views and browser verification; the original asset review below remains historical evidence.
 
 ## 1. Visual direction
 
